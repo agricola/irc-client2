@@ -19,11 +19,14 @@ public:
 private slots:
     void readStream();
 
+    void on_lineEdit_returnPressed();
+
 private:
     Ui::MainWindow *ui;
     QTcpSocket *socket;
     QString totalText;
 
+    void AddText(QString text);
     void connectToServer();
 };
 

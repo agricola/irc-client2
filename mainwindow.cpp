@@ -23,15 +23,30 @@ void MainWindow::connectToServer()
 
     socket->connectToHost("irc.freenode.net", 6667);
     socket->write("NICK TEST444999\r\n");
-    socket->write("USER TEST444999 TEST4449 TEST :TEST\r\n");
+    socket->write("USER TEST444999 0 * :TEST\r\n");
 }
 
 void MainWindow::readStream()
 {
     QString text;
     text = socket->readAll();
-    totalText += text;
+    AddText(text);
+}
 
+void MainWindow::on_lineEdit_returnPressed()
+{
+    QString text = ui->lineEdit->text() + "\r\n";
+    if (text.length() > 0)
+    {
+        socket->write(text.toUtf8());
+        AddText(text);
+        ui->lineEdit->clear();
+    }
+}
+
+void MainWindow::AddText(QString text)
+{
+    totalText += text;
     QScrollBar *scrollBar = ui->textBrowser->verticalScrollBar();
     bool isMax = scrollBar->value() == scrollBar->maximum();
 
