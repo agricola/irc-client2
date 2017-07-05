@@ -2,11 +2,15 @@
 #include "ui_mainwindow.h"
 #include <QTcpSocket>
 #include <QScrollBar>
+#include <channel.h>
+#include <server.h>
+#include <qdebug.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    socket(new QTcpSocket(this))
+    socket(new QTcpSocket(this)),
+	server(new Server("irc.freenode.net", 6667))
 {
     ui->setupUi(this);
     connectToServer();
@@ -14,14 +18,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+	delete server;
     delete ui;
 }
 
 void MainWindow::connectToServer()
 {
     connect(socket, &QIODevice::readyRead, this, &MainWindow::readStream);
-
-    socket->connectToHost("irc.freenode.net", 6667);
+    socket->connectToHost(server->getAddress(), server->getPort());
     socket->write("NICK TEST444999\r\n");
     socket->write("USER TEST444999 0 * :TEST\r\n");
 }
@@ -55,6 +59,5 @@ void MainWindow::AddText(QString text)
     if (isMax)
     {
         scrollBar->setValue(scrollBar->maximum());
-        qDebug("YAY");
     }
 }

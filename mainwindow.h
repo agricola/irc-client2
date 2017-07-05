@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QTcpSocket>
+#include <channel.h>
+#include <server.h>
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +27,7 @@ private:
     Ui::MainWindow *ui;
     QTcpSocket *socket;
     QString totalText;
+	Server *server;
 
     void AddText(QString text);
     void connectToServer();
