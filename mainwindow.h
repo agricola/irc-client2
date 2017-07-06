@@ -5,6 +5,8 @@
 #include <QTcpSocket>
 #include <channel.h>
 #include <server.h>
+#include <vector>
+#include <list>
 
 namespace Ui {
 class MainWindow;
@@ -20,18 +22,20 @@ public:
 
 private slots:
     void readStream();
-
     void on_lineEdit_returnPressed();
+    void on_channelCombo_activated(int index);
+    void on_serverCombo_activated(int index);
+    void on_channelCombo_editTextChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
     QTcpSocket *socket;
     QString totalText;
-	Server *server;
+	std::list<Server*> *servers;
 
 	QStringList splitLine(QString line);
     void addText(QString text);
-    void connectToServer();
+    void connectToServer(QString server, int port);
 	QString parsedLine(QString line);
 };
 

@@ -1,6 +1,6 @@
 #include "channel.h"
 
-Channel::Channel(const char *channelName) :
+Channel::Channel(const QString channelName) :
 	name(channelName)
 {
 
@@ -10,7 +10,7 @@ Channel::~Channel()
 {
 }
 
-const char *Channel::getName()
+const QString Channel::getName()
 {
 	return name;
 }

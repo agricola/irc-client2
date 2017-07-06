@@ -1,16 +1,17 @@
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
+#include <qstring.h>
 
 class Channel
 {
 public:
-    Channel(const char *channelName);
-	const char *getName();
+    Channel(const QString channelName);
+	const QString getName();
 	~Channel();
 
 private:
-	const char *name;
+	const QString name;
 };
 
 #endif // CHANNEL_H

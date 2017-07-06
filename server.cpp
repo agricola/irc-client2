@@ -1,7 +1,7 @@
 #include "server.h"
 #include <windows.h>
 
-Server::Server(const char *serverAddress, const int serverPort) :
+Server::Server(const QString serverAddress, const int serverPort) :
 	address(serverAddress),
 	port(new int(serverPort)),
 	activeChannels(new std::list<Channel*>()),
@@ -29,13 +29,13 @@ void Server::setCurrent(Channel *channel)
 	}
 }
 
-void Server::addChannel(const char *name)
+void Server::addChannel(const QString name)
 {
 	Channel *c = new Channel(name);
 	activeChannels->push_back(c);
 }
 
-const char *Server::getAddress()
+const QString Server::getAddress()
 {
 	return address;
 }

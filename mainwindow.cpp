@@ -12,29 +12,41 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     socket(new QTcpSocket(this)),
-	server(new Server("irc.freenode.net", 6667))
+	servers(new std::list<Server*>())
 {
     ui->setupUi(this);
-    connectToServer();
+    connectToServer("irc.freenode.net", 6667);
 }
 
 MainWindow::~MainWindow()
 {
-	delete server;
+	servers->remove_if(
+		[](Server *element)
+	{
+		delete element;
+		return true;
+	}
+	);
+	delete servers;
     delete ui;
 }
 
-void MainWindow::connectToServer()
+void MainWindow::connectToServer(QString server, int port)
 {
     connect(socket, &QIODevice::readyRead, this, &MainWindow::readStream);
-    socket->connectToHost(server->getAddress(), server->getPort());
+    socket->connectToHost(server, port);
+	//add a wait for connection someday
+	Server* s = new Server(server, port);
+	servers->push_back(s);
+	ui->serverCombo->addItem(s->getAddress());
     socket->write("NICK TEST444999\r\n");
     socket->write("USER TEST444999 0 * :TEST\r\n");
 }
 
 QString MainWindow::parsedLine(QString line)
 {
-	QString prefixMiddle = line.section(':', 1, -2);
+	QString prefixEnd = line.section(':', 1);
+	QString prefixMiddle = prefixEnd.split(" :").first();
 	//qDebug() << line;
 	QString prefix = prefixMiddle.section(' ', 0, 0);
 	QString command = prefixMiddle.section(' ', 1, 1);
@@ -43,9 +55,18 @@ QString MainWindow::parsedLine(QString line)
 		QString::SkipEmptyParts);
 	//qDebug() << middleParams.count();
 	//QString trailing = line.section(' :', -1, -1);
-	QString trailing = line.split(" :").last();
-	Line l(prefix, command, middleParams, trailing); //not needed atm
-	return trailing;
+	QString result;
+	if (line.contains(" :"))
+	{
+		QString trailing = prefixEnd.split(" :").last();
+		result = trailing;
+	}
+	else
+	{
+		result = command + " " + middle;
+	}
+	//Line  l(prefix, command, middleParams, trailing);
+	return result;
 }
 
 void MainWindow::readStream()
@@ -85,4 +106,19 @@ void MainWindow::addText(QString text)
     {
         scrollBar->setValue(scrollBar->maximum());
     }
+}
+
+void MainWindow::on_channelCombo_activated(int index)
+{
+	qDebug() << "channel act";
+}
+
+void MainWindow::on_serverCombo_activated(int index)
+{
+	qDebug() << "server act";
+}
+
+void MainWindow::on_channelCombo_editTextChanged(const QString &arg1)
+{
+
 }
