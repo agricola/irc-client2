@@ -7,7 +7,6 @@ Server::Server(const char *serverAddress, const int serverPort) :
 	activeChannels(new std::list<Channel*>()),
 	current()
 {
-
 }
 
 const std::list<Channel*> *Server::channels()
@@ -49,7 +48,7 @@ const int Server::getPort()
 Server::~Server()
 {
 	activeChannels->remove_if(
-		[](Channel* element)
+		[](Channel *element)
 		{
 			delete element;
 			return true;

@@ -29,8 +29,10 @@ private:
     QString totalText;
 	Server *server;
 
-    void AddText(QString text);
+	QStringList splitLine(QString line);
+    void addText(QString text);
     void connectToServer();
+	QString parsedLine(QString line);
 };
 
 #endif // MAINWINDOW_H
