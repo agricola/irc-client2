@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connectToServer("irc.freenode.net", 6667);
 	ui->channelCombo->setModel(list);
-
+	
 	//when channellist updated, update combobox index
 	connect(list, &ChannelList::setIndex, 
 		this, &MainWindow::setChannelIndex);
@@ -50,6 +50,11 @@ void MainWindow::connectToServer(const QString &server, const int port)
     socket->write("USER TEST444999 0 * :TEST\r\n");
 }
 
+void readAll()
+{
+
+}
+
 void MainWindow::setChannelIndex(int index)
 {
 	ui->channelCombo->setCurrentIndex(index);
@@ -57,10 +62,12 @@ void MainWindow::setChannelIndex(int index)
 
 void MainWindow::readStream()
 {
+	//QFuture<void> future = QtConcurrent::run(readAll);
 	while (socket->canReadLine())
 	{
 		QString line = socket->readLine();
 		addText(lineHandler->HandleLine(line));
+		qApp->processEvents();
 	}
 }
 

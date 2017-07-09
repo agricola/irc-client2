@@ -9,6 +9,10 @@
 #include <list>
 #include <channellist.h>
 #include <linehandler.h>
+#include <qfuture.h>
+#include <QtConcurrent\qtconcurrentrun.h>
+
+extern void readAll();
 
 namespace Ui {
 class MainWindow;
@@ -40,7 +44,6 @@ private:
 	void addServer(const QString &serverAddress, const int serverPort);
     void addText(const QString &text);
     void connectToServer(const QString &server, const int port);
-	const QString parsedLine(const QString &line);
 };
 
 #endif // MAINWINDOW_H
