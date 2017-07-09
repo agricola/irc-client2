@@ -7,6 +7,8 @@
 #include <server.h>
 #include <vector>
 #include <list>
+#include <channellist.h>
+#include <linehandler.h>
 
 namespace Ui {
 class MainWindow;
@@ -25,18 +27,20 @@ private slots:
     void on_lineEdit_returnPressed();
     void on_channelCombo_activated(int index);
     void on_serverCombo_activated(int index);
-    void on_channelCombo_editTextChanged(const QString &arg1);
+	void setChannelIndex(int index);
 
 private:
     Ui::MainWindow *ui;
     QTcpSocket *socket;
     QString totalText;
 	std::list<Server*> *servers;
+	ChannelList *list;
+	LineHandler *lineHandler;
 
-	QStringList splitLine(QString line);
-    void addText(QString text);
-    void connectToServer(QString server, int port);
-	QString parsedLine(QString line);
+	void addServer(const QString &serverAddress, const int serverPort);
+    void addText(const QString &text);
+    void connectToServer(const QString &server, const int port);
+	const QString parsedLine(const QString &line);
 };
 
 #endif // MAINWINDOW_H

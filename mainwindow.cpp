@@ -12,10 +12,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     socket(new QTcpSocket(this)),
-	servers(new std::list<Server*>())
+	servers(new std::list<Server*>()),
+	list(new ChannelList(this)),
+	lineHandler(new LineHandler(list))
 {
     ui->setupUi(this);
     connectToServer("irc.freenode.net", 6667);
+	ui->channelCombo->setModel(list);
+
+	//when channellist updated, update combobox index
+	connect(list, &ChannelList::setIndex, 
+		this, &MainWindow::setChannelIndex);
 }
 
 MainWindow::~MainWindow()
@@ -29,44 +36,23 @@ MainWindow::~MainWindow()
 	);
 	delete servers;
     delete ui;
+	delete lineHandler;
 }
 
-void MainWindow::connectToServer(QString server, int port)
+void MainWindow::connectToServer(const QString &server, const int port)
 {
-    connect(socket, &QIODevice::readyRead, this, &MainWindow::readStream);
+    connect(socket, &QIODevice::readyRead,
+		this, &MainWindow::readStream);
     socket->connectToHost(server, port);
 	//add a wait for connection someday
-	Server* s = new Server(server, port);
-	servers->push_back(s);
-	ui->serverCombo->addItem(s->getAddress());
+
     socket->write("NICK TEST444999\r\n");
     socket->write("USER TEST444999 0 * :TEST\r\n");
 }
 
-QString MainWindow::parsedLine(QString line)
+void MainWindow::setChannelIndex(int index)
 {
-	QString prefixEnd = line.section(':', 1);
-	QString prefixMiddle = prefixEnd.split(" :").first();
-	//qDebug() << line;
-	QString prefix = prefixMiddle.section(' ', 0, 0);
-	QString command = prefixMiddle.section(' ', 1, 1);
-	QString middle = prefixMiddle.section(' ', 2);
-	QStringList middleParams = middle.split(QRegExp("\\s+"),
-		QString::SkipEmptyParts);
-	//qDebug() << middleParams.count();
-	//QString trailing = line.section(' :', -1, -1);
-	QString result;
-	if (line.contains(" :"))
-	{
-		QString trailing = prefixEnd.split(" :").last();
-		result = trailing;
-	}
-	else
-	{
-		result = command + " " + middle;
-	}
-	//Line  l(prefix, command, middleParams, trailing);
-	return result;
+	ui->channelCombo->setCurrentIndex(index);
 }
 
 void MainWindow::readStream()
@@ -74,7 +60,7 @@ void MainWindow::readStream()
 	while (socket->canReadLine())
 	{
 		QString line = socket->readLine();
-		addText(parsedLine(line));
+		addText(lineHandler->HandleLine(line));
 	}
 }
 
@@ -89,12 +75,16 @@ void MainWindow::on_lineEdit_returnPressed()
     }
 }
 
-QStringList MainWindow::splitLine(QString line)
+void MainWindow::addServer(const QString &serverAddress,
+	const int serverPort)
 {
-	return	line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+	Server* s = new Server(serverAddress, serverPort);
+	servers->push_front(s);
+	ui->serverCombo->addItem(s->getAddress());
+	//connect()
 }
 
-void MainWindow::addText(QString text)
+void MainWindow::addText(const QString &text)
 {
     totalText += text;
     QScrollBar *scrollBar = ui->textBrowser->verticalScrollBar();
@@ -110,15 +100,10 @@ void MainWindow::addText(QString text)
 
 void MainWindow::on_channelCombo_activated(int index)
 {
-	qDebug() << "channel act";
+	//qDebug() << "channel act";
 }
 
 void MainWindow::on_serverCombo_activated(int index)
 {
-	qDebug() << "server act";
-}
-
-void MainWindow::on_channelCombo_editTextChanged(const QString &arg1)
-{
-
+	//qDebug() << "server act";
 }

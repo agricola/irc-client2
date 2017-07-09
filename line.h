@@ -8,19 +8,23 @@
 class Line
 {
 public:
-	Line(const QString prefix, const QString command,
-		const QStringList middle, const QString trailing);
+	Line(const QString fullMessage);
+	Line(const QString &prefix, const QString &command,
+		const QStringList &middle, const QString &trailing=NULL);
 	~Line();
 	const QString getPrefix();
 	const QString getCommand();
 	const QStringList getMiddle();
 	const QString getTrailing();
+	const QString getFullMessage();
 
 private:
-	const QString prefix;
-	const QString command;
-	const QStringList middle;
-	const QString trailing;
+	QString prefix;
+	QString command;
+	QStringList middle;
+	QString trailing;
+	QString fullMessage;
+	void parseLine(QString message);
 };
 
 #endif LINE_H

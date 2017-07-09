@@ -31,8 +31,8 @@ void Server::setCurrent(Channel *channel)
 
 void Server::addChannel(const QString name)
 {
-	Channel *c = new Channel(name);
-	activeChannels->push_back(c);
+	//Channel *c = new Channel(name);
+	//activeChannels->push_back(c);
 }
 
 const QString Server::getAddress()

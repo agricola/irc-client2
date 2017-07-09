@@ -27,12 +27,16 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     server.cpp \
-    channel.cpp
+    channel.cpp \
+    channellist.cpp \
+    messagehandler.cpp
 
 HEADERS += \
         mainwindow.h \
     server.h \
-    channel.h
+    channel.h \
+    channellist.h \
+    messagehandler.h
 
 FORMS += \
         mainwindow.ui
