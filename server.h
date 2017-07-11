@@ -4,24 +4,26 @@
 #include <list>
 #include <channel.h>
 #include <qstring.h>
+#include <channellist.h>
 
-class Server
+class Server : public QObject
 {
+	Q_OBJECT
+
 public:
-    Server(const QString serverAddress, const int serverPort);
+    Server(
+		const QString &serverAddress,
+		const int serverPort,
+		QObject *parent);
 	~Server();
-    const std::list<Channel*> *channels();
-    Channel *getCurrent();
-	void setCurrent(Channel *channel);
-    void addChannel(const QString name);
+    ChannelList *getChannels();
 	const QString getAddress();
 	const int getPort();
 
 private:
-	Channel *current;
-    std::list<Channel*> *activeChannels;
+	ChannelList *channels;
 	const QString address;
-	const int *port;
+	const int port;
 };
 
 #endif // SERVER_H

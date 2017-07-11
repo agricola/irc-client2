@@ -1,38 +1,24 @@
 #include "server.h"
 #include <windows.h>
 
-Server::Server(const QString serverAddress, const int serverPort) :
+Server::Server(
+	const QString &serverAddress,
+	const int serverPort,
+	QObject *parent) :
+	QObject(parent),
 	address(serverAddress),
-	port(new int(serverPort)),
-	activeChannels(new std::list<Channel*>()),
-	current()
+	port(serverPort),
+	channels(new ChannelList(this))
 {
 }
 
-const std::list<Channel*> *Server::channels()
+Server::~Server()
 {
-	return activeChannels;
 }
 
-Channel *Server::getCurrent()
+ChannelList *Server::getChannels()
 {
-	return current;
-}
-
-void Server::setCurrent(Channel *channel)
-{
-	bool contains = (std::find(activeChannels->begin(),
-		activeChannels->end(), channel) != activeChannels->end());
-	if (contains)
-	{
-		current = channel;
-	}
-}
-
-void Server::addChannel(const QString name)
-{
-	//Channel *c = new Channel(name);
-	//activeChannels->push_back(c);
+	return channels;
 }
 
 const QString Server::getAddress()
@@ -42,18 +28,5 @@ const QString Server::getAddress()
 
 const int Server::getPort()
 {
-	return *port;
-}
-
-Server::~Server()
-{
-	activeChannels->remove_if(
-		[](Channel *element)
-		{
-			delete element;
-			return true;
-		}
-	);
-	delete port;
-	delete activeChannels;
+	return port;
 }

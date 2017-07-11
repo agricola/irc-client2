@@ -7,7 +7,6 @@ ChannelList::ChannelList(QObject *parent)
 
 ChannelList::~ChannelList()
 {
-	channels.clear();
 }
 
 QVariant ChannelList::data(const QModelIndex & index, int role) const

@@ -6,16 +6,16 @@
 #include <line.h>
 #include <qdebug.h>
 #include <channellist.h>
+#include <server.h>
 
 class LineHandler
 {
 public:
-	LineHandler(ChannelList *channels);
+	LineHandler();
 	~LineHandler();
-	QString HandleLine(QString message);
+	QString HandleLine(QString message, Server *server);
 private:
-	ChannelList *channelList;
-	QString processCommand(Line &line);
+	QString processCommand(Line &line, Server *server);
 };
 
 #endif

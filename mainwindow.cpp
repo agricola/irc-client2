@@ -12,31 +12,22 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     socket(new QTcpSocket(this)),
-	servers(new std::list<Server*>()),
-	list(new ChannelList(this)),
-	lineHandler(new LineHandler(list))
+	servers(new ServerList(this)),
+	lineHandler(new LineHandler())
 {
     ui->setupUi(this);
     connectToServer("irc.freenode.net", 6667);
-	ui->channelCombo->setModel(list);
 	
+	//ui->channelCombo->setModel(channels);
+	ui->serverCombo->setModel(servers);
 	//when channellist updated, update combobox index
-	connect(list, &ChannelList::setIndex, 
-		this, &MainWindow::setChannelIndex);
+	//
 }
 
 MainWindow::~MainWindow()
 {
-	servers->remove_if(
-		[](Server *element)
-	{
-		delete element;
-		return true;
-	}
-	);
-	delete servers;
-    delete ui;
 	delete lineHandler;
+    delete ui;
 }
 
 void MainWindow::connectToServer(const QString &server, const int port)
@@ -44,15 +35,18 @@ void MainWindow::connectToServer(const QString &server, const int port)
     connect(socket, &QIODevice::readyRead,
 		this, &MainWindow::readStream);
     socket->connectToHost(server, port);
+	addServer(server, port);
 	//add a wait for connection someday
 
     socket->write("NICK TEST444999\r\n");
     socket->write("USER TEST444999 0 * :TEST\r\n");
 }
 
-void readAll()
+void MainWindow::changeServer(Server *server)
 {
-
+	ui->channelCombo->setModel(server->getChannels());
+	connect(server->getChannels(), &ChannelList::setIndex,
+		this, &MainWindow::setChannelIndex);
 }
 
 void MainWindow::setChannelIndex(int index)
@@ -66,7 +60,7 @@ void MainWindow::readStream()
 	while (socket->canReadLine())
 	{
 		QString line = socket->readLine();
-		addText(lineHandler->HandleLine(line));
+		addText(lineHandler->HandleLine(line, servers->getServers()[0]));
 		qApp->processEvents();
 	}
 }
@@ -82,12 +76,14 @@ void MainWindow::on_lineEdit_returnPressed()
     }
 }
 
-void MainWindow::addServer(const QString &serverAddress,
-	const int serverPort)
+void MainWindow::addServer(const QString &address,
+	const int port)
 {
-	Server* s = new Server(serverAddress, serverPort);
-	servers->push_front(s);
-	ui->serverCombo->addItem(s->getAddress());
+	servers->addServer(address, port);
+	changeServer(servers->getServers()[0]);
+	//ui->serverCombo->addItem(address);
+	//ui->serverCombo->setCurrentIndex(servers->getIndex(address, 5555));
+
 	//connect()
 }
 
