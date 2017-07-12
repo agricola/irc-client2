@@ -2,9 +2,10 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-Line::Line(const QString fullMessage)
+Line::Line(const QString &message) :
+	fullMessage(message)
 {
-	parseLine(fullMessage);
+	parseLine(message);
 }
 
 Line::Line(const QString &prefix, const QString &command,
@@ -42,7 +43,14 @@ const QString Line::getTrailing()
 
 const QString Line::getFullMessage()
 {
-	return QString();
+	return fullMessage;
+}
+
+bool Line::sentFrom(const QString source)
+{
+	size_t length = source.size();
+	QStringRef subString(&prefix, 0, length);
+	return subString == source;
 }
 
 void Line::parseLine(QString message)

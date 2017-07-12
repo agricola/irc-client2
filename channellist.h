@@ -18,6 +18,8 @@ public:
 	int rowCount(const QModelIndex & parent = QModelIndex()) const override;
 	void addChannel(const QString name);
 	void removeChannel(const QString name);
+	const size_t getIndex(const QString &name);
+	std::vector<Channel*> getChannels();
 
 signals:
 	void setIndex(int index);

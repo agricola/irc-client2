@@ -1,6 +1,6 @@
 #include "linehandler.h"
 
-LineHandler::LineHandler()
+LineHandler::LineHandler(QObject *parent) : QObject(parent)
 {
 }
 
@@ -8,21 +8,42 @@ LineHandler::~LineHandler()
 {
 }
 
-QString LineHandler::HandleLine(QString message, Server *server)
+LineResult LineHandler::HandleLine(
+	QString message,
+	Server *server,
+	const QString &name)
 {
 	Line line(message);
-	return processCommand(line, server);
+	return processCommand(line, server, name);
 }
 
-QString LineHandler::processCommand(Line &line, Server *server)
+LineResult LineHandler::processCommand(
+	Line &line,
+	Server *server,
+	const QString &name)
 {
+	size_t channelIndex = 0;
 	QString result = "N/A";
 	// TODO: make enum for commands XD
 	if (line.getCommand() == "JOIN")
 	{
 		QString channel = line.getMiddle().first();
-		server->getChannels()->addChannel(channel);
-		result = "Joined channel " + channel + "\n";
+		channelIndex = server->getChannelList()->getIndex(channel);
+		if (line.sentFrom(name))
+		{
+			server->getChannelList()->addChannel(channel);
+			result = "Joined channel " + channel + "\n";
+		}
+		else
+		{
+			result =  line.getPrefix() + "joined the channel \n";
+		}
+	}
+	else if (line.getCommand() == "PRIVMSG")
+	{
+		QString channel = line.getMiddle().first();
+		channelIndex = server->getChannelList()->getIndex(channel);
+		result = line.getPrefix() + " | " + line.getTrailing();
 	}
 	else
 	{
@@ -35,5 +56,8 @@ QString LineHandler::processCommand(Line &line, Server *server)
 			result = line.getTrailing();
 		}
 	}
-	return result;
+	LineResult lineResult;
+	lineResult.text = result;
+	lineResult.channelIndex = channelIndex;
+	return lineResult;
 }

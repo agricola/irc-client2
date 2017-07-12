@@ -8,7 +8,7 @@
 class Line
 {
 public:
-	Line(const QString fullMessage);
+	Line(const QString &message);
 	Line(const QString &prefix, const QString &command,
 		const QStringList &middle, const QString &trailing=NULL);
 	~Line();
@@ -17,6 +17,7 @@ public:
 	const QStringList getMiddle();
 	const QString getTrailing();
 	const QString getFullMessage();
+	bool sentFrom(const QString source);
 
 private:
 	QString prefix;

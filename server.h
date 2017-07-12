@@ -16,12 +16,13 @@ public:
 		const int serverPort,
 		QObject *parent);
 	~Server();
-    ChannelList *getChannels();
+    ChannelList *getChannelList();
 	const QString getAddress();
 	const int getPort();
 
 private:
 	ChannelList *channels;
+	QString *text;
 	const QString address;
 	const int port;
 };

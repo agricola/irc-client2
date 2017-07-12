@@ -10,13 +10,15 @@ Server::Server(
 	port(serverPort),
 	channels(new ChannelList(this))
 {
+	channels->addChannel(address + " (Server)");
 }
 
 Server::~Server()
 {
+	
 }
 
-ChannelList *Server::getChannels()
+ChannelList *Server::getChannelList()
 {
 	return channels;
 }

@@ -46,6 +46,20 @@ void ChannelList::addChannel(const QString name)
 	emit setIndex(end);
 }
 
+const size_t ChannelList::getIndex(const QString &name)
+{
+	std::vector<Channel*>::iterator iter = std::find_if(
+		channels.begin(), channels.end(), [name](Channel *s) {
+		return s->getName() == name; });
+	size_t index = std::distance(channels.begin(), iter);
+	return index;
+}
+
+std::vector<Channel*> ChannelList::getChannels()
+{
+	return channels;
+}
+
 void ChannelList::removeChannel(const QString name)
 {
 	channels.erase(std::remove_if(channels.begin(), channels.end(),

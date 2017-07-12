@@ -13,8 +13,6 @@
 #include <QtConcurrent\qtconcurrentrun.h>
 #include <serverlist.h>
 
-extern void readAll();
-
 namespace Ui {
 class MainWindow;
 }
@@ -40,11 +38,14 @@ private:
     QString totalText;
 	ServerList *servers;
 	LineHandler *lineHandler;
+	const QString userName;
 
 	void addServer(const QString &serverAddress, const int serverPort);
     void addText(const QString &text);
+	void handleLineResult(LineResult result);
     void connectToServer(const QString &server, const int port);
 	void changeServer(Server *server);
+	Channel *getChannel(const int index);
 };
 
 #endif // MAINWINDOW_H

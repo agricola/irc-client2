@@ -8,14 +8,22 @@
 #include <channellist.h>
 #include <server.h>
 
-class LineHandler
+struct LineResult
 {
+	QString text;
+	size_t channelIndex;
+};
+
+class LineHandler : public QObject
+{
+	Q_OBJECT
+
 public:
-	LineHandler();
+	LineHandler(QObject *parent);
 	~LineHandler();
-	QString HandleLine(QString message, Server *server);
+	LineResult HandleLine(QString message, Server *server, const QString &name);
 private:
-	QString processCommand(Line &line, Server *server);
+	LineResult processCommand(Line &line, Server *server, const QString &name);
 };
 
 #endif
