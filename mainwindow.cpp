@@ -94,9 +94,12 @@ void MainWindow::on_lineEdit_returnPressed()
 	else if (index > 0)
 	{
 		result = "PRIVMSG " + getChannel(index)->getName() + " :" + text;
-		addText(text + "\r\n");
+		addText(userName + " | " + text + "\r\n");
 	}
-	qDebug() << result;
+	else
+	{
+		addText("Nothing sent! Try /HELP\r\n");
+	}
     socket->write(result.toUtf8() + "\r\n");
     ui->lineEdit->clear();
 }
@@ -106,10 +109,6 @@ void MainWindow::addServer(const QString &address,
 {
 	servers->addServer(address, port);
 	changeServer(servers->getServers()[0]);
-	//ui->serverCombo->addItem(address);
-	//ui->serverCombo->setCurrentIndex(servers->getIndex(address, 5555));
-
-	//connect()
 }
 
 void MainWindow::addText(const QString &text, const int index)

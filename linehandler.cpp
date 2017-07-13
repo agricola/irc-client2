@@ -36,14 +36,14 @@ LineResult LineHandler::processCommand(
 		}
 		else
 		{
-			result =  line.getPrefix() + "joined the channel \n";
+			result =  line.getNickname() + " joined the channel \n";
 		}
 	}
 	else if (line.getCommand() == "PRIVMSG")
 	{
 		QString channel = line.getMiddle().first();
 		channelIndex = server->getChannelList()->getIndex(channel);
-		result = line.getPrefix() + " | " + line.getTrailing();
+		result = line.getNickname() + " | " + line.getTrailing();
 	}
 	else
 	{

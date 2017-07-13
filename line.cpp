@@ -8,14 +8,14 @@ Line::Line(const QString &message) :
 	parseLine(message);
 }
 
-Line::Line(const QString &prefix, const QString &command,
+/*Line::Line(const QString &prefix, const QString &command,
 	const QStringList &middle, const QString &trailing) :
 	prefix(prefix),
 	command(command),
 	middle(middle),
 	trailing(trailing)
 {
-}
+}*/
 
 Line::~Line()
 {
@@ -46,6 +46,11 @@ const QString Line::getFullMessage()
 	return fullMessage;
 }
 
+const QString Line::getNickname()
+{
+	return nickname;
+}
+
 bool Line::sentFrom(const QString source)
 {
 	size_t length = source.size();
@@ -58,13 +63,16 @@ void Line::parseLine(QString message)
 	QString prefixEnd = message.section(':', 1);
 	QString prefixMiddle = prefixEnd.split(" :").first();
 	prefix = prefixMiddle.section(' ', 0, 0);
+	QStringRef nick(&prefix, 0, prefix.indexOf("!"));
+	nickname = nick.toString();
 	command = prefixMiddle.section(' ', 1, 1);
 	QString middleParams = prefixMiddle.section(' ', 2);
 	middle = middleParams.split(QRegExp("\\s+"),
 		QString::SkipEmptyParts);
-	if (message.contains(" :"))
+	int trailStart = prefixEnd.indexOf(" :");
+	if (trailStart >= 0)
 	{
-		trailing = prefixEnd.split(" :").last();
+		trailing = prefixEnd.right(prefixEnd.size() - trailStart - 2);
 	}
 
 }
