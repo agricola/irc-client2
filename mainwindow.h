@@ -41,7 +41,8 @@ private:
 	const QString userName;
 
 	void addServer(const QString &serverAddress, const int serverPort);
-    void addText(const QString &text);
+    void addText(const QString &text, const int index);
+	void addText(const QString &text);
 	void handleLineResult(LineResult result);
     void connectToServer(const QString &server, const int port);
 	void changeServer(Server *server);

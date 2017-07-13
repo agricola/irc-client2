@@ -83,13 +83,22 @@ void MainWindow::readStream()
 
 void MainWindow::on_lineEdit_returnPressed()
 {
-    QString text = ui->lineEdit->text() + "\r\n";
-    if (text.length() > 0)
-    {
-        socket->write(text.toUtf8());
-        //addText(text);
-        ui->lineEdit->clear();
-    }
+	QString text = ui->lineEdit->text();
+	QString result;
+	if (text.length() <= 0) return;
+	int index = ui->channelCombo->currentIndex();
+	if (text.at(0) == "/")
+	{
+		result = text.remove(0, 1);
+	}
+	else if (index > 0)
+	{
+		result = "PRIVMSG " + getChannel(index)->getName() + " :" + text;
+		addText(text + "\r\n");
+	}
+	qDebug() << result;
+    socket->write(result.toUtf8() + "\r\n");
+    ui->lineEdit->clear();
 }
 
 void MainWindow::addServer(const QString &address,
@@ -103,39 +112,32 @@ void MainWindow::addServer(const QString &address,
 	//connect()
 }
 
-void MainWindow::addText(const QString &text)
+void MainWindow::addText(const QString &text, const int index)
 {
-	
-    totalText += text;
-    QScrollBar *scrollBar = ui->textBrowser->verticalScrollBar();
-    bool isMax = scrollBar->value() == scrollBar->maximum();
-
-    ui->textBrowser->setText(totalText);
-
-    if (isMax)
-    {
-        scrollBar->setValue(scrollBar->maximum());
-    }
-}
-
-void MainWindow::handleLineResult(LineResult result)
-{
-	Channel *c = getChannel(result.channelIndex);
-	c->addText(result.text);
-	size_t currentIndex = ui->channelCombo->currentIndex();
-	//qDebug() << currentIndex;
-	if (result.channelIndex == currentIndex)
+	Channel *channel = getChannel(index);
+	channel->addText(text);
+	if (index == ui->channelCombo->currentIndex())
 	{
 		QScrollBar *scrollBar = ui->textBrowser->verticalScrollBar();
 		bool isMax = scrollBar->value() == scrollBar->maximum();
 
-		ui->textBrowser->setText(c->getText());
+		ui->textBrowser->setText(channel->getText());
 
 		if (isMax)
 		{
 			scrollBar->setValue(scrollBar->maximum());
 		}
 	}
+}
+
+void MainWindow::addText(const QString &text)
+{
+	addText(text, ui->channelCombo->currentIndex());
+}
+
+void MainWindow::handleLineResult(LineResult result)
+{
+	addText(result.text, result.channelIndex);
 }
 
 void MainWindow::on_channelCombo_activated(int index)
