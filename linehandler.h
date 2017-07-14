@@ -12,6 +12,7 @@ struct LineResult
 {
 	QString text;
 	size_t channelIndex;
+	QString response;
 };
 
 class LineHandler : public QObject

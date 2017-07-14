@@ -63,20 +63,27 @@ bool Line::sentFrom(const QString source)
 
 void Line::parseLine(QString message)
 {
-	QString prefixEnd = message.section(':', 1);
-	QString prefixMiddle = prefixEnd.split(" :").first();
-	prefix = prefixMiddle.section(' ', 0, 0);
-	QStringRef nick(&prefix, 0, prefix.indexOf("!"));
-	nickname = nick.toString();
-	command = prefixMiddle.section(' ', 1, 1);
-	QString middleParams = prefixMiddle.section(' ', 2);
-	middle = middleParams.split(QRegExp("\\s+"),
-		QString::SkipEmptyParts);
-	int trailStart = prefixEnd.indexOf(" :");
+	if (message.left(4) == "PING")
+	{
+		command = "PING";
+	}
+	else
+	{
+		QString prefixEnd = message.section(':', 1);
+		QString prefixMiddle = prefixEnd.split(" :").first();
+		prefix = prefixMiddle.section(' ', 0, 0);
+		QStringRef nick(&prefix, 0, prefix.indexOf("!"));
+		nickname = nick.toString();
+		command = prefixMiddle.section(' ', 1, 1);
+		QString middleParams = prefixMiddle.section(' ', 2);
+		middle = middleParams.split(QRegExp("\\s+"),
+			QString::SkipEmptyParts);
+	}
+	int trailStart = message.indexOf(" :");
 	if (trailStart >= 0)
 	{
 		trailing = new QString(
-			prefixEnd.right(prefixEnd.size() - trailStart - 2)
+			message.right(message.size() - trailStart - 2)
 			.remove(QRegExp("[\r\n]{2}$")));
 		//qDebug() << *trailing;
 	}

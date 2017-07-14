@@ -137,7 +137,15 @@ void MainWindow::addText(const QString &text)
 
 void MainWindow::handleLineResult(LineResult result)
 {
-	addText(result.text, result.channelIndex);
+	if (result.response != "")
+	{
+		socket->write(result.response.toUtf8() + "\r\n");
+	}
+	else
+	{
+		addText(result.text, result.channelIndex);
+	}
+	
 }
 
 void MainWindow::on_channelCombo_activated(int index)

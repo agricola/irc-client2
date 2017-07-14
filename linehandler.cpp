@@ -24,13 +24,15 @@ LineResult LineHandler::processCommand(
 {
 	size_t channelIndex = 0;
 	QString result = "N/A";
+	QString response = "";
 	// TODO: make enum for commands XD
 	const QString command = line.getCommand();
 	const QString *trailing = line.getTrailing();
 	if (command == "PRIVMSG")
 	{
 		QString channel = line.getMiddle().first();
-		channelIndex = server->getChannelList()->getIndex(channel);
+		if (channel.at(0) == '#')
+			channelIndex = server->getChannelList()->getIndex(channel);
 		result = line.getNickname() + " | " + line.getTrailing();
 	}
 	else if (command == "JOIN")
@@ -87,6 +89,16 @@ LineResult LineHandler::processCommand(
 			+ " from " + channel + " (" + line.getTrailing() + ")";
 		channelIndex = server->getChannelList()->getIndex(channel);
 	}
+	else if (command == "PING")
+	{
+		response = "PONG";
+		qDebug() << line.getFullMessage();
+		if (trailing != NULL)
+		{
+			//qDebug() << *trailing;
+			response += " " + *trailing;
+		}
+	}
 	else
 	{
 		if (trailing != NULL)
@@ -98,9 +110,10 @@ LineResult LineHandler::processCommand(
 			result = line.getFullMessage();
 		}
 	}
-	qDebug() << line.getFullMessage();
+	//qDebug() << line.getFullMessage();
 	LineResult lineResult;
 	lineResult.text = result + "\n";
 	lineResult.channelIndex = channelIndex;
+	lineResult.response = response;
 	return lineResult;
 }
