@@ -22,14 +22,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->serverCombo->setModel(servers);
 
 	// code to benchmark
-	/*const auto line = ":verne.freenode.net 372 TEST444999 : -By connecting to freenode you indicate that you have read and";
+	/*const QString line = ":verne.freenode.net 372 TEST444999 : -By connecting to freenode you indicate that you have read and";
+	//const QString *line2 = new QString(line);
 	auto begin = std::chrono::high_resolution_clock::now();
-	for (size_t i = 0; i < 100; i++)
+	for (size_t i = 0; i < 10000; i++)
 	{
-		addText(lineHandler->HandleLine(line, NULL));
 	}
 	auto end = std::chrono::high_resolution_clock::now();
-	qDebug() << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();*/
+	qDebug() << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+	//delete line2;*/
 }
 
 MainWindow::~MainWindow()

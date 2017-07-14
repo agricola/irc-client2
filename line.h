@@ -15,7 +15,7 @@ public:
 	const QString getPrefix();
 	const QString getCommand();
 	const QStringList getMiddle();
-	const QString getTrailing();
+	const QString *getTrailing();
 	const QString getFullMessage();
 	const QString getNickname();
 	bool sentFrom(const QString source);
@@ -24,10 +24,11 @@ private:
 	QString prefix;
 	QString command;
 	QStringList middle;
-	QString trailing;
+	QString *trailing;
 	QString fullMessage;
 	QString nickname;
 	void parseLine(QString message);
+	void parseLine2(QString message);
 };
 
 #endif LINE_H

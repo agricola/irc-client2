@@ -3,7 +3,8 @@
 #include <qstringlist.h>
 
 Line::Line(const QString &message) :
-	fullMessage(message)
+	fullMessage(message),
+	trailing(NULL)
 {
 	parseLine(message);
 }
@@ -19,6 +20,7 @@ Line::Line(const QString &message) :
 
 Line::~Line()
 {
+	delete trailing;
 }
 
 const QString Line::getPrefix()
@@ -36,7 +38,7 @@ const QStringList Line::getMiddle()
 	return middle;
 }
 
-const QString Line::getTrailing()
+const QString *Line::getTrailing()
 {
 	return trailing;
 }
@@ -53,9 +55,10 @@ const QString Line::getNickname()
 
 bool Line::sentFrom(const QString source)
 {
-	size_t length = source.size();
-	QStringRef subString(&prefix, 0, length);
-	return subString == source;
+	//size_t length = source.size();
+	//QStringRef subString(&prefix, 0, length);
+	//return subString == source;
+	return nickname == source;
 }
 
 void Line::parseLine(QString message)
@@ -72,7 +75,14 @@ void Line::parseLine(QString message)
 	int trailStart = prefixEnd.indexOf(" :");
 	if (trailStart >= 0)
 	{
-		trailing = prefixEnd.right(prefixEnd.size() - trailStart - 2);
+		trailing = new QString(
+			prefixEnd.right(prefixEnd.size() - trailStart - 2)
+			.remove(QRegExp("[\r\n]{2}$")));
+		//qDebug() << *trailing;
 	}
 
+}
+
+void Line::parseLine2(QString message)
+{
 }
