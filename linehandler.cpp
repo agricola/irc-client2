@@ -68,18 +68,37 @@ LineResult LineHandler::processCommand(
 		}
 		//qDebug() << line.getFullMessage();
 	}
+	else if (command == "PART")
+	{
+		QString channel = line.getMiddle()[0];
+		result = line.getNickname() + " parted " + channel;
+		channelIndex = server->getChannelList()->getIndex(channel);
+	}
+	else if (command == "QUIT")
+	{
+		result = line.getNickname() + " quit (" 
+			+ line.getTrailing() + ")";
+		//channelIndex = server->getChannelList()->getIndex(channel);
+	}
+	else if (command == "KICK")
+	{
+		QString channel = line.getMiddle()[0];
+		result = line.getNickname() + " kicked " + line.getMiddle()[1]
+			+ " from " + channel + " (" + line.getTrailing() + ")";
+		channelIndex = server->getChannelList()->getIndex(channel);
+	}
 	else
 	{
-		if (trailing == NULL)
-		{
-			result = line.getFullMessage();
-		}
-		else
+		if (trailing != NULL)
 		{
 			result = *trailing;
 		}
-		//qDebug() << line.getFullMessage();
+		else
+		{
+			result = line.getFullMessage();
+		}
 	}
+	qDebug() << line.getFullMessage();
 	LineResult lineResult;
 	lineResult.text = result + "\n";
 	lineResult.channelIndex = channelIndex;

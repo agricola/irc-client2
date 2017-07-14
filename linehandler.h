@@ -21,9 +21,13 @@ class LineHandler : public QObject
 public:
 	LineHandler(QObject *parent);
 	~LineHandler();
-	LineResult HandleLine(QString message, Server *server, const QString &name);
+	LineResult HandleLine(QString message,
+		Server *server,
+		const QString &name);
 private:
-	LineResult processCommand(Line &line, Server *server, const QString &name);
+	LineResult processCommand(Line &line,
+		Server *server,
+		const QString &name);
 };
 
 #endif
