@@ -22,23 +22,27 @@ LineResult LineHandler::processCommand(
 	Server *server,
 	const QString &name)
 {
-	size_t channelIndex = 0;
 	QString result = "N/A";
 	QString response = "";
-	// TODO: make enum for commands XD
+
+	// get channel and index if theres a channel in line
+	const QStringList *mid = line.getMiddle();
+	auto channelInfo = ifChannel(mid, server);
+	QString channel = std::get<0>(channelInfo);
+	size_t channelIndex = std::get<1>(channelInfo);
+
 	const QString command = line.getCommand();
 	const QString *trailing = line.getTrailing();
+	// TODO: make enum for commands XD
 	if (command == "PRIVMSG")
 	{
-		QString channel = line.getMiddle().first();
-		if (channel.at(0) == '#')
-			channelIndex = server->getChannelList()->getIndex(channel);
 		result = line.getNickname() + " | " + line.getTrailing();
 	}
 	else if (command == "JOIN")
 	{
-		QString channel = line.getMiddle().first();
-		channelIndex = server->getChannelList()->getIndex(channel);
+		//assert(mid != NULL);
+		//assert(!mid->isEmpty());
+		//assert(mid->at(0).at(0) == '#');
 		if (line.sentFrom(name))
 		{
 			server->getChannelList()->addChannel(channel);
@@ -51,43 +55,36 @@ LineResult LineHandler::processCommand(
 	}
 	else if (command == "MODE")
 	{
-		//result = line.getNickname() + ""
 		if (trailing != NULL)
 		{
 			result = line.getNickname() + " sets mode " + trailing
-				+ " on " + line.getMiddle()[0];
+				+ " on " + mid->at(0);
 		}
 		else
 		{
-			QString target = line.getMiddle()[0];
+			QString target = mid->at(0);
 			result = line.getNickname() + " sets mode "
-				+ line.getMiddle()[1] + " on " + target;
-			if (target.at(0) == '#')
+				+ line.getMiddle()->at(1) + " on " + target;
+			/*if (target.at(0) == '#')
 			{
 				channelIndex =
 					server->getChannelList()->getIndex(target);
-			}
+			}*/
 		}
-		//qDebug() << line.getFullMessage();
 	}
 	else if (command == "PART")
 	{
-		QString channel = line.getMiddle()[0];
 		result = line.getNickname() + " parted " + channel;
-		channelIndex = server->getChannelList()->getIndex(channel);
 	}
 	else if (command == "QUIT")
 	{
 		result = line.getNickname() + " quit (" 
 			+ line.getTrailing() + ")";
-		//channelIndex = server->getChannelList()->getIndex(channel);
 	}
 	else if (command == "KICK")
 	{
-		QString channel = line.getMiddle()[0];
-		result = line.getNickname() + " kicked " + line.getMiddle()[1]
+		result = line.getNickname() + " kicked " + mid->at(1);
 			+ " from " + channel + " (" + line.getTrailing() + ")";
-		channelIndex = server->getChannelList()->getIndex(channel);
 	}
 	else if (command == "PING")
 	{
@@ -95,7 +92,6 @@ LineResult LineHandler::processCommand(
 		qDebug() << line.getFullMessage();
 		if (trailing != NULL)
 		{
-			//qDebug() << *trailing;
 			response += " " + *trailing;
 		}
 	}
@@ -110,10 +106,22 @@ LineResult LineHandler::processCommand(
 			result = line.getFullMessage();
 		}
 	}
-	//qDebug() << line.getFullMessage();
 	LineResult lineResult;
 	lineResult.text = result + "\n";
 	lineResult.channelIndex = channelIndex;
 	lineResult.response = response;
 	return lineResult;
+}
+
+std::tuple<QString, size_t> LineHandler::ifChannel(
+	const QStringList *mid, Server *server)
+{
+	QString channel = "(MISSING CHANNEL XD)";
+	size_t index = 0;
+	if (mid != NULL && !mid->isEmpty() && mid->at(0).at(0) == '#')
+	{
+		channel = mid->at(0);
+		index = server->getChannelList()->getIndex(channel);
+	}
+	return std::make_tuple(channel, index);
 }

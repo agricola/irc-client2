@@ -14,7 +14,7 @@ public:
 	~Line();
 	const QString getPrefix();
 	const QString getCommand();
-	const QStringList getMiddle();
+	const QStringList *getMiddle();
 	const QString *getTrailing();
 	const QString getFullMessage();
 	const QString getNickname();
@@ -23,7 +23,7 @@ public:
 private:
 	QString prefix;
 	QString command;
-	QStringList middle;
+	QStringList *middle;
 	QString *trailing;
 	QString fullMessage;
 	QString nickname;

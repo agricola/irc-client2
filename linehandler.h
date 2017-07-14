@@ -7,12 +7,13 @@
 #include <qdebug.h>
 #include <channellist.h>
 #include <server.h>
+#include <cassert>
+#include <tuple>
 
 struct LineResult
 {
-	QString text;
+	QString text, response;
 	size_t channelIndex;
-	QString response;
 };
 
 class LineHandler : public QObject
@@ -29,6 +30,7 @@ private:
 	LineResult processCommand(Line &line,
 		Server *server,
 		const QString &name);
+	std::tuple<QString, size_t> ifChannel(const QStringList *mid, Server *server);
 };
 
 #endif

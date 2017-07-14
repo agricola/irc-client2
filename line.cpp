@@ -4,7 +4,8 @@
 
 Line::Line(const QString &message) :
 	fullMessage(message),
-	trailing(NULL)
+	trailing(NULL),
+	middle(NULL)
 {
 	parseLine(message);
 }
@@ -33,7 +34,7 @@ const QString Line::getCommand()
 	return command;
 }
 
-const QStringList Line::getMiddle()
+const QStringList *Line::getMiddle()
 {
 	return middle;
 }
@@ -76,8 +77,8 @@ void Line::parseLine(QString message)
 		nickname = nick.toString();
 		command = prefixMiddle.section(' ', 1, 1);
 		QString middleParams = prefixMiddle.section(' ', 2);
-		middle = middleParams.split(QRegExp("\\s+"),
-			QString::SkipEmptyParts);
+		middle = new QStringList(middleParams.split(QRegExp("\\s+"),
+			QString::SkipEmptyParts));
 	}
 	int trailStart = message.indexOf(" :");
 	if (trailStart >= 0)
