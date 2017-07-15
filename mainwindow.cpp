@@ -12,13 +12,19 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
+    ui(new Ui::MainWindow()),
     socket(new QTcpSocket(this)),
 	servers(new ServerList(this)),
 	lineHandler(new LineHandler(this)),
 	userName("TESTAGRI")
 {
+	
     ui->setupUi(this);
+
+	ui->textBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
+	//connect(this, &MainWindow::on_textBrowser_customContextMenuRequested,
+	//	this, &MainWindow::displayContextMenu);
+
     connectToServer("irc.freenode.net", 6667);
 	ui->serverCombo->setModel(servers);
 
@@ -159,4 +165,20 @@ void MainWindow::on_channelCombo_activated(int index)
 void MainWindow::on_serverCombo_activated(int index)
 {
 	//qDebug() << "server act";
+}
+
+void MainWindow::on_textBrowser_customContextMenuRequested(const QPoint &pos)
+{
+	displayContextMenu(pos);
+}
+
+void MainWindow::displayContextMenu(const QPoint &pos)
+{
+	QMenu contextMenu("Context menu", this);
+
+	QAction action1("Quit", this);
+	connect(&action1, &QAction::triggered, this, &MainWindow::close);
+	contextMenu.addAction(&action1);
+
+	contextMenu.exec(mapToGlobal(pos));
 }

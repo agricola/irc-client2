@@ -32,6 +32,9 @@ private slots:
     void on_channelCombo_activated(int index);
     void on_serverCombo_activated(int index);
 	void setChannelIndex(int index);
+    void on_textBrowser_customContextMenuRequested(const QPoint &pos);
+	//void customContextMenuRequested(const QPoint &pos);
+	
 
 private:
     Ui::MainWindow *ui;
@@ -48,6 +51,7 @@ private:
 	void handleLineResult(LineResult result);
     void connectToServer(const QString &server, const int port);
 	void changeServer(Server *server);
+	void displayContextMenu(const QPoint &pos);
 	Channel *getChannel(const int index);
 };
 
