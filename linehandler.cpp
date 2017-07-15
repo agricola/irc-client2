@@ -24,7 +24,7 @@ LineResult LineHandler::processCommand(
 {
 	QString result = "N/A";
 	QString response = "";
-
+	qDebug() << line.getFullMessage();
 	// get channel and index if theres a channel in line
 	const QStringList *mid = line.getMiddle();
 	auto channelInfo = ifChannel(mid, server);

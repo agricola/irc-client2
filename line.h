@@ -5,6 +5,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdebug.h>
+#include <qobject.h>
+
 class Line
 {
 public:

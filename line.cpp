@@ -21,6 +21,7 @@ Line::Line(const QString &message) :
 
 Line::~Line()
 {
+	delete middle;
 	delete trailing;
 }
 

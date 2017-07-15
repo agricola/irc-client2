@@ -29,14 +29,25 @@ SOURCES += \
     server.cpp \
     channel.cpp \
     channellist.cpp \
-    messagehandler.cpp
+    linehandler.cpp \
+    line.cpp \
+    linehandler.cpp \
+    server.cpp \
+    serverlist.cpp \
+    connectwindow.cpp
 
 HEADERS += \
         mainwindow.h \
     server.h \
     channel.h \
     channellist.h \
-    messagehandler.h
+    linehandler.h \
+    line.h \
+    linehandler.h \
+    server.h \
+    serverlist.h \
+    connectwindow.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    connectwindow.ui

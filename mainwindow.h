@@ -12,6 +12,7 @@
 #include <qfuture.h>
 #include <QtConcurrent\qtconcurrentrun.h>
 #include <serverlist.h>
+#include <connectwindow.h>
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +40,7 @@ private:
 	ServerList *servers;
 	LineHandler *lineHandler;
 	const QString userName;
+	ConnectWindow *connectWindow;
 
 	void addServer(const QString &serverAddress, const int serverPort);
     void addText(const QString &text, const int index);
