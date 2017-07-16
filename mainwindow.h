@@ -34,16 +34,17 @@ private slots:
 	void setChannelIndex(int index);
     void on_textBrowser_customContextMenuRequested(const QPoint &pos);
 	//void customContextMenuRequested(const QPoint &pos);
+	void onSetConnection(ConnectionDetails c);
 	
-
 private:
     Ui::MainWindow *ui;
     QTcpSocket *socket;
     QString totalText;
 	ServerList *servers;
 	LineHandler *lineHandler;
-	const QString userName;
+	QString nickname;
 	ConnectWindow *connectWindow;
+	bool connected = false;
 
 	void addServer(const QString &serverAddress, const int serverPort);
     void addText(const QString &text, const int index);
@@ -53,6 +54,7 @@ private:
 	void changeServer(Server *server);
 	void displayContextMenu(const QPoint &pos);
 	Channel *getChannel(const int index);
+	void onConnect(const QString &nickLine, const QString &userLine);
 };
 
 #endif // MAINWINDOW_H

@@ -105,7 +105,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit">
+         <widget class="QLineEdit" name="ServerLine">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -154,7 +154,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_2">
+         <widget class="QLineEdit" name="NickLine">
           <property name="text">
            <string>TESTAGRI</string>
           </property>
@@ -185,7 +185,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_3">
+         <widget class="QLineEdit" name="RealLine">
           <property name="text">
            <string>mr testman</string>
           </property>
@@ -216,7 +216,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_4">
+         <widget class="QLineEdit" name="UserLine">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>

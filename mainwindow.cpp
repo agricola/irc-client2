@@ -16,14 +16,13 @@ MainWindow::MainWindow(QWidget *parent) :
     socket(new QTcpSocket(this)),
 	servers(new ServerList(this)),
 	lineHandler(new LineHandler(this)),
-	connectWindow(new ConnectWindow(this)),
-	userName("TESTAGRI")
+	connectWindow(new ConnectWindow(this))
 {
     ui->setupUi(this);
 	ui->textBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    connectToServer("irc.freenode.net", 6667);
-	ui->serverCombo->setModel(servers);
+	connect(connectWindow, &ConnectWindow::setConnectionDetails,
+		this, &MainWindow::onSetConnection);
 }
 
 MainWindow::~MainWindow()
@@ -34,14 +33,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::connectToServer(const QString &server, const int port)
 {
-    connect(socket, &QIODevice::readyRead,
-		this, &MainWindow::readStream);
+    connect(socket, &QIODevice::readyRead, this, &MainWindow::readStream);
     socket->connectToHost(server, port);
 	addServer(server, port);
-	//add a wait for connection someday
-	QString data = "NICK " + userName + "\r\n";
-    socket->write(data.toUtf8().data());
-    socket->write("USER TEST444999 0 * :TEST\r\n");
+	ui->serverCombo->setModel(servers);
 }
 
 void MainWindow::changeServer(Server *server)
@@ -70,7 +65,7 @@ void MainWindow::readStream()
 	{
 		QString line = socket->readLine();
 		Server *s = servers->getServers()[0];
-		handleLineResult(lineHandler->HandleLine(line, s, userName));
+		handleLineResult(lineHandler->HandleLine(line, s, nickname));
 		qApp->processEvents();
 	}
 }
@@ -88,7 +83,7 @@ void MainWindow::on_lineEdit_returnPressed()
 	else if (index > 0)
 	{
 		result = "PRIVMSG " + getChannel(index)->getName() + " :" + text;
-		addText(userName + " | " + text + "\r\n");
+		addText(nickname + " | " + text + "\r\n");
 	}
 	else
 	{
@@ -157,6 +152,26 @@ void MainWindow::on_textBrowser_customContextMenuRequested(
 	const QPoint &pos)
 {
 	displayContextMenu(pos);
+}
+
+void MainWindow::onSetConnection(ConnectionDetails c)
+{
+	if (connected) return;
+	const QString user = "USER " + c.userName
+		+ " 0 * :" + c.realName + "\r\n";
+	const QString nick = "NICK " + c.nickname
+		+ "\r\n";
+	nickname = c.nickname;
+	connectToServer(c.server, 6667);
+	connect(socket, &QTcpSocket::connected, this,
+		[user, nick, this]() { onConnect(user, nick); });
+}
+
+void MainWindow::onConnect(const QString &nickLine, const QString &userLine)
+{
+	connected = true;
+	socket->write(nickLine.toUtf8());
+	socket->write(userLine.toUtf8());
 }
 
 void MainWindow::displayContextMenu(const QPoint &pos)
