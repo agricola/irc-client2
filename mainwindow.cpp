@@ -16,28 +16,14 @@ MainWindow::MainWindow(QWidget *parent) :
     socket(new QTcpSocket(this)),
 	servers(new ServerList(this)),
 	lineHandler(new LineHandler(this)),
+	connectWindow(new ConnectWindow(this)),
 	userName("TESTAGRI")
 {
-	
     ui->setupUi(this);
-
 	ui->textBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
-	//connect(this, &MainWindow::on_textBrowser_customContextMenuRequested,
-	//	this, &MainWindow::displayContextMenu);
 
     connectToServer("irc.freenode.net", 6667);
 	ui->serverCombo->setModel(servers);
-
-	// code to benchmark
-	/*const QString line = ":verne.freenode.net 372 TEST444999 : -By connecting to freenode you indicate that you have read and";
-	//const QString *line2 = new QString(line);
-	auto begin = std::chrono::high_resolution_clock::now();
-	for (size_t i = 0; i < 10000; i++)
-	{
-	}
-	auto end = std::chrono::high_resolution_clock::now();
-	qDebug() << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-	//delete line2;*/
 }
 
 MainWindow::~MainWindow()
@@ -167,7 +153,8 @@ void MainWindow::on_serverCombo_activated(int index)
 	//qDebug() << "server act";
 }
 
-void MainWindow::on_textBrowser_customContextMenuRequested(const QPoint &pos)
+void MainWindow::on_textBrowser_customContextMenuRequested(
+	const QPoint &pos)
 {
 	displayContextMenu(pos);
 }
@@ -175,6 +162,11 @@ void MainWindow::on_textBrowser_customContextMenuRequested(const QPoint &pos)
 void MainWindow::displayContextMenu(const QPoint &pos)
 {
 	QMenu contextMenu("Context menu", this);
+
+	QAction action0("Connect", this);
+	connect(&action0, &QAction::triggered,
+		connectWindow, &ConnectWindow::show);
+	contextMenu.addAction(&action0);
 
 	QAction action1("Quit", this);
 	connect(&action1, &QAction::triggered, this, &MainWindow::close);

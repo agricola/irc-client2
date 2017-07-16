@@ -6,6 +6,7 @@ ConnectWindow::ConnectWindow(QWidget *parent) :
     ui(new Ui::ConnectWindow)
 {
     ui->setupUi(this);
+	setWindowFlags(Qt::Window);
 }
 
 ConnectWindow::~ConnectWindow()
@@ -15,5 +16,5 @@ ConnectWindow::~ConnectWindow()
 
 void ConnectWindow::on_pushButton_clicked()
 {
-    close();
+	close();
 }
