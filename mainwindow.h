@@ -54,7 +54,8 @@ private:
 	void changeServer(Server *server);
 	void displayContextMenu(const QPoint &pos);
 	Channel *getChannel(const int index);
-	void onConnect(const QString &nickLine, const QString &userLine);
+	void onConnect(const QString &server, const int port,
+		const QString &nickLine, const QString &userLine);
 };
 
 #endif // MAINWINDOW_H

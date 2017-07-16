@@ -35,8 +35,6 @@ void MainWindow::connectToServer(const QString &server, const int port)
 {
     connect(socket, &QIODevice::readyRead, this, &MainWindow::readStream);
     socket->connectToHost(server, port);
-	addServer(server, port);
-	ui->serverCombo->setModel(servers);
 }
 
 void MainWindow::changeServer(Server *server)
@@ -157,19 +155,26 @@ void MainWindow::on_textBrowser_customContextMenuRequested(
 void MainWindow::onSetConnection(ConnectionDetails c)
 {
 	if (connected) return;
+	socket->disconnect();
 	const QString user = "USER " + c.userName
 		+ " 0 * :" + c.realName + "\r\n";
 	const QString nick = "NICK " + c.nickname
 		+ "\r\n";
+	const QString server = c.server;
+	const int port = 6667;
 	nickname = c.nickname;
-	connectToServer(c.server, 6667);
+	connectToServer(server, 6667);
 	connect(socket, &QTcpSocket::connected, this,
-		[user, nick, this]() { onConnect(user, nick); });
+		[server, port, user, nick, this]() {
+			onConnect(server, port, user, nick);});
 }
 
-void MainWindow::onConnect(const QString &nickLine, const QString &userLine)
+void MainWindow::onConnect(const QString &server, const int port,
+	const QString &nickLine, const QString &userLine)
 {
 	connected = true;
+	addServer(server, port);
+	ui->serverCombo->setModel(servers);
 	socket->write(nickLine.toUtf8());
 	socket->write(userLine.toUtf8());
 }
