@@ -44,7 +44,7 @@ private:
 	LineHandler *lineHandler;
 	QString nickname;
 	ConnectWindow *connectWindow;
-	bool connected = false;
+	bool connecting = false;
 
 	void addServer(const QString &serverAddress, const int serverPort);
     void addText(const QString &text, const int index);
@@ -56,6 +56,7 @@ private:
 	Channel *getChannel(const int index);
 	void onConnect(const QString &server, const int port,
 		const QString &nickLine, const QString &userLine);
+	void resetServer();
 };
 
 #endif // MAINWINDOW_H

@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 	ui->textBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
-
+	//socket->write("QUIT");
 	connect(connectWindow, &ConnectWindow::setConnectionDetails,
 		this, &MainWindow::onSetConnection);
 }
@@ -154,8 +154,9 @@ void MainWindow::on_textBrowser_customContextMenuRequested(
 
 void MainWindow::onSetConnection(ConnectionDetails c)
 {
-	if (connected) return;
-	socket->disconnect();
+	if (connecting) return;
+	connecting = true;
+	resetServer();
 	const QString user = "USER " + c.userName
 		+ " 0 * :" + c.realName + "\r\n";
 	const QString nick = "NICK " + c.nickname
@@ -172,11 +173,23 @@ void MainWindow::onSetConnection(ConnectionDetails c)
 void MainWindow::onConnect(const QString &server, const int port,
 	const QString &nickLine, const QString &userLine)
 {
-	connected = true;
+	connecting = false;
 	addServer(server, port);
 	ui->serverCombo->setModel(servers);
 	socket->write(nickLine.toUtf8());
 	socket->write(userLine.toUtf8());
+}
+
+void MainWindow::resetServer()
+{
+	delete servers;
+	servers = new ServerList(this);
+
+	// probably not all of this is needed
+	socket->disconnect();
+	socket->disconnectFromHost();
+	delete socket;
+	socket = new QTcpSocket(this);
 }
 
 void MainWindow::displayContextMenu(const QPoint &pos)
