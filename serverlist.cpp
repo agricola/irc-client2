@@ -1,7 +1,8 @@
 #include "serverlist.h"
+#include <qdebug.h>
 
 ServerList::ServerList(QObject *parent)
-	: QStringListModel(parent)
+	: QAbstractListModel(parent)
 {
 }
 
@@ -14,7 +15,7 @@ QVariant ServerList::data(const QModelIndex & index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
-	if (index.row() >= servers.size())
+	if (index.row() >= servers.count())
 		return QVariant();
 
 	if (role == Qt::DisplayRole)
@@ -22,12 +23,15 @@ QVariant ServerList::data(const QModelIndex & index, int role) const
 		return servers.at(index.row())->getAddress();
 	}
 	else
+	{
 		return QVariant();
+	}
+		
 }
 
 int ServerList::rowCount(const QModelIndex & parent) const
 {
-	return servers.size();
+	return servers.count();
 }
 
 void ServerList::addServer(const QString &name, const int port)
@@ -55,21 +59,21 @@ void ServerList::removeServer(const QString &name, const int port)
 
 const size_t ServerList::getIndex(const QString & name, const int port)
 {
-	std::vector<Server*>::iterator iter = std::find_if(
+	QList<Server*>::iterator iter = std::find_if(
 		servers.begin(), servers.end(), [name, port](Server *s) {
 		return s->getAddress() == name && s->getPort() == port; });
 	size_t index = std::distance(servers.begin(), iter);
 	return index;
 }
 
-std::vector<Server*> ServerList::getServers()
+QList<Server*> ServerList::getServers()
 {
 	return servers;
 }
 
 bool ServerList::contains(const QString &name, const int port)
 {
-	std::vector<Server*>::iterator found = std::find_if(
+	QList<Server*>::iterator found = std::find_if(
 		servers.begin(), servers.end(), [name, port](Server *s) {
 			return s->getAddress() == name && s->getPort() == port; });
 	if (found != servers.end())

@@ -9,7 +9,7 @@
 
 // template class doesn't work with Q_OBJECT so this looks
 // very similar to ChannelList atm
-class ServerList : public QStringListModel
+class ServerList : public QAbstractListModel
 {
 	Q_OBJECT
 
@@ -21,13 +21,13 @@ public:
 	void addServer(const QString &name, const int port);
 	void removeServer(const QString &name, const int port);
 	const size_t getIndex(const QString &name, const int port);
-	std::vector<Server*> getServers();
+	QList<Server*> getServers();
 
 signals:
 	void setIndex(int index);
 
 private:
-	std::vector<Server*> servers;
+	QList<Server*> servers;
 	bool contains(const QString &name, const int port);
 
 };

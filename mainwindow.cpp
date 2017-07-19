@@ -16,13 +16,26 @@ MainWindow::MainWindow(QWidget *parent) :
     socket(new QTcpSocket(this)),
 	servers(new ServerList(this)),
 	lineHandler(new LineHandler(this)),
-	connectWindow(new ConnectWindow(this))
+	connectWindow(new ConnectWindow(this)),
+	emptyModel(new QStandardItemModel(this))
+
 {
     ui->setupUi(this);
 	ui->textBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
 	//socket->write("QUIT");
 	connect(connectWindow, &ConnectWindow::setConnectionDetails,
 		this, &MainWindow::onSetConnection);
+	/*qDebug() << "0";
+	qDebug() << "1";
+	servers->addServer("butt", 6667);
+	qDebug() << "2";
+	ui->serverCombo->setModel(servers);
+	qDebug() << "3";
+	//delete servers;
+	ui->serverCombo->setModel(&emptyModel);
+	ui->serverCombo->setModel(servers);
+	ui->serverCombo->setModel(&emptyModel);
+	qDebug() << "4";*/
 }
 
 MainWindow::~MainWindow()
@@ -174,6 +187,8 @@ void MainWindow::onConnect(const QString &server, const int port,
 	const QString &nickLine, const QString &userLine)
 {
 	connecting = false;
+	delete servers;
+	servers = new ServerList(this);
 	addServer(server, port);
 	ui->serverCombo->setModel(servers);
 	socket->write(nickLine.toUtf8());
@@ -182,14 +197,20 @@ void MainWindow::onConnect(const QString &server, const int port,
 
 void MainWindow::resetServer()
 {
-	delete servers;
-	servers = new ServerList(this);
-
 	// probably not all of this is needed
-	socket->disconnect();
-	socket->disconnectFromHost();
-	delete socket;
-	socket = new QTcpSocket(this);
+	if (socket->state() == QTcpSocket::ConnectedState)
+	{
+		socket->disconnect();
+		socket->disconnectFromHost();
+		delete socket;
+		socket = new QTcpSocket(this);
+		ui->textBrowser->setText("DISCONNECTED\r\n");
+
+		ui->serverCombo->setModel(&emptyModel);
+		ui->channelCombo->setModel(&emptyModel);
+		delete servers;
+		servers = new ServerList(this);
+	}
 }
 
 void MainWindow::displayContextMenu(const QPoint &pos)
@@ -201,9 +222,13 @@ void MainWindow::displayContextMenu(const QPoint &pos)
 		connectWindow, &ConnectWindow::show);
 	contextMenu.addAction(&action0);
 
-	QAction action1("Quit", this);
-	connect(&action1, &QAction::triggered, this, &MainWindow::close);
+	QAction action1("Disconnect", this);
+	connect(&action1, &QAction::triggered, this, &MainWindow::resetServer);
 	contextMenu.addAction(&action1);
+
+	QAction action2("Quit", this);
+	connect(&action2, &QAction::triggered, this, &MainWindow::close);
+	contextMenu.addAction(&action2);
 
 	contextMenu.exec(mapToGlobal(pos));
 }

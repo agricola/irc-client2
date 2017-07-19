@@ -13,6 +13,7 @@
 #include <QtConcurrent\qtconcurrentrun.h>
 #include <serverlist.h>
 #include <connectwindow.h>
+#include <qstandarditemmodel.h>
 
 namespace Ui {
 class MainWindow;
@@ -45,6 +46,7 @@ private:
 	QString nickname;
 	ConnectWindow *connectWindow;
 	bool connecting = false;
+	QStandardItemModel emptyModel;
 
 	void addServer(const QString &serverAddress, const int serverPort);
     void addText(const QString &text, const int index);
