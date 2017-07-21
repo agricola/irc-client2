@@ -34,7 +34,9 @@ SOURCES += \
     linehandler.cpp \
     server.cpp \
     serverlist.cpp \
-    connectwindow.cpp
+    connectwindow.cpp \
+    userlist.cpp \
+    user.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -46,7 +48,9 @@ HEADERS += \
     linehandler.h \
     server.h \
     serverlist.h \
-    connectwindow.h
+    connectwindow.h \
+    userlist.h \
+    user.h
 
 FORMS += \
         mainwindow.ui \

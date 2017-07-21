@@ -76,14 +76,7 @@ bool ServerList::contains(const QString &name, const int port)
 	QList<Server*>::iterator found = std::find_if(
 		servers.begin(), servers.end(), [name, port](Server *s) {
 			return s->getAddress() == name && s->getPort() == port; });
-	if (found != servers.end())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return found != servers.end();
 }
 
 

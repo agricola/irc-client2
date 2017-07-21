@@ -71,14 +71,7 @@ bool ChannelList::containsName(const QString name)
 	std::vector<Channel*>::iterator found =
 		std::find_if(channels.begin(), channels.end(),
 			[name](Channel *c) { return c->getName() == name; });
-	if (found != channels.end())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return found != channels.end();
 }
 /*
 void ChannelList::setIndex(int index)

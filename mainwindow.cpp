@@ -9,6 +9,8 @@
 #include <vector>
 #include <chrono>
 
+#include <user.h>
+#include <userlist.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,25 +24,36 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 	ui->textBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
-	//socket->write("QUIT");
+	
 	connect(connectWindow, &ConnectWindow::setConnectionDetails,
 		this, &MainWindow::onSetConnection);
-	/*qDebug() << "0";
-	qDebug() << "1";
-	servers->addServer("butt", 6667);
-	qDebug() << "2";
-	ui->serverCombo->setModel(servers);
-	qDebug() << "3";
-	//delete servers;
-	ui->serverCombo->setModel(&emptyModel);
-	ui->serverCombo->setModel(servers);
-	ui->serverCombo->setModel(&emptyModel);
-	qDebug() << "4";*/
+
+	/*auto line = "TEST!~ttest@Rizon-DC62ACB5.hsd1.va.comcast.net";
+	auto begin = std::chrono::high_resolution_clock::now();
+	for (size_t i = 0; i < 100; i++)
+	{
+		User u(line);
+	}
+	auto end = std::chrono::high_resolution_clock::now();
+	qDebug() << std::chrono::duration_cast<std::chrono::nanoseconds>(
+		end - begin).count();*/
+
+	UserList *list = new UserList(this);
+	for (int i = 0; i < 26; i++)
+	{
+		QString c = 65 + i;
+		QString full = c + "!" + c  + "@" + c;
+		list->addUser(full);
+	}
+	
+	//list->addUser(line);
+	ui->listView->setModel(list);
+	
+
 }
 
 MainWindow::~MainWindow()
 {
-	delete lineHandler;
     delete ui;
 }
 
@@ -76,7 +89,7 @@ void MainWindow::readStream()
 	{
 		QString line = socket->readLine();
 		Server *s = servers->getServers()[0];
-		handleLineResult(lineHandler->HandleLine(line, s, nickname));
+		handleLineResult(lineHandler.HandleLine(line, s, nickname));
 		qApp->processEvents();
 	}
 }

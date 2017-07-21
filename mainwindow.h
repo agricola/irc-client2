@@ -42,7 +42,7 @@ private:
     QTcpSocket *socket;
     QString totalText;
 	ServerList *servers;
-	LineHandler *lineHandler;
+	LineHandler lineHandler;
 	QString nickname;
 	ConnectWindow *connectWindow;
 	bool connecting = false;
