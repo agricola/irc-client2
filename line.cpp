@@ -4,8 +4,7 @@
 
 Line::Line(const QString &message) :
 	fullMessage(message),
-	trailing(NULL),
-	middle(NULL)
+	params(new QStringList())
 {
 	parseLine(message);
 }
@@ -21,8 +20,7 @@ Line::Line(const QString &message) :
 
 Line::~Line()
 {
-	delete middle;
-	delete trailing;
+	delete params;
 }
 
 const QString Line::getPrefix()
@@ -35,19 +33,19 @@ const QString Line::getCommand()
 	return command;
 }
 
-const QStringList *Line::getMiddle()
+const QStringList *Line::getParams()
 {
-	return middle;
-}
-
-const QString *Line::getTrailing()
-{
-	return trailing;
+	return params;
 }
 
 const QString Line::getFullMessage()
 {
 	return fullMessage;
+}
+
+const QString Line::last()
+{
+	return params->last();
 }
 
 const QString Line::getNickname()
@@ -65,33 +63,40 @@ bool Line::sentFrom(const QString source)
 
 void Line::parseLine(QString message)
 {
+	QStringList prefixTrail = message.split(" :");
+	QString *trailing = NULL;
+	if (prefixTrail.size() == 2)
+	{
+		trailing = new QString(prefixTrail.last()
+			.remove(QRegExp("[\r\n]{2}$")));
+	}
+
 	if (message.left(4) == "PING")
 	{
 		command = "PING";
 	}
 	else
 	{
-		QString prefixEnd = message.section(':', 1);
-		QString prefixMiddle = prefixEnd.split(" :").first();
+		QString prefixMiddle = prefixTrail.first().section(':', 1);
+		
 		prefix = prefixMiddle.section(' ', 0, 0);
+
 		QStringRef nick(&prefix, 0, prefix.indexOf("!"));
 		nickname = nick.toString();
+
 		command = prefixMiddle.section(' ', 1, 1);
+
 		QString middleParams = prefixMiddle.section(' ', 2);
-		middle = new QStringList(middleParams.split(QRegExp("\\s+"),
+		QStringList *mid = new QStringList(middleParams.split(QRegExp("\\s+"),
 			QString::SkipEmptyParts));
+		delete params;
+		params = mid;
 	}
-	int trailStart = message.indexOf(" :");
-	if (trailStart >= 0)
+
+	if (trailing != NULL)
 	{
-		trailing = new QString(
-			message.right(message.size() - trailStart - 2)
-			.remove(QRegExp("[\r\n]{2}$")));
-		//qDebug() << *trailing;
+		params->append(*trailing);
 	}
+	delete trailing;
 
-}
-
-void Line::parseLine2(QString message)
-{
 }

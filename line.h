@@ -16,21 +16,19 @@ public:
 	~Line();
 	const QString getPrefix();
 	const QString getCommand();
-	const QStringList *getMiddle();
-	const QString *getTrailing();
 	const QString getFullMessage();
+	const QString last();
 	const QString getNickname();
+	const QStringList *getParams();
 	bool sentFrom(const QString source);
 
 private:
 	QString prefix;
 	QString command;
-	QStringList *middle;
-	QString *trailing;
 	QString fullMessage;
 	QString nickname;
+	QStringList *params;
 	void parseLine(QString message);
-	void parseLine2(QString message);
 };
 
 #endif LINE_H

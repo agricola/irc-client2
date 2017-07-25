@@ -26,27 +26,22 @@ LineResult LineHandler::processCommand(
 	QString response = "";
 	qDebug() << line.getFullMessage();
 	// get channel and index if theres a channel in line
-	const QStringList *mid = line.getMiddle();
-	auto channelInfo = ifChannel(mid, server);
-	QString channel = std::get<0>(channelInfo);
-	size_t channelIndex = std::get<1>(channelInfo);
+	const QStringList *params = line.getParams();
+	const QString *channel = Channel(params);
 
 	const QString command = line.getCommand();
-	const QString *trailing = line.getTrailing();
+	//const QString *trailing = line->last();
 	// TODO: make enum for commands XD
 	if (command == "PRIVMSG")
 	{
-		result = line.getNickname() + " | " + line.getTrailing();
+		result = line.getNickname() + " | " + params->last();
 	}
 	else if (command == "JOIN")
 	{
-		//assert(mid != NULL);
-		//assert(!mid->isEmpty());
-		//assert(mid->at(0).at(0) == '#');
 		if (line.sentFrom(name))
 		{
-			server->getChannelList()->addChannel(channel);
-			result = "Joined channel " + channel;
+			server->getChannelList()->addChannel(*channel);
+			result = "Joined channel " + *channel;
 		}
 		else
 		{
@@ -55,22 +50,9 @@ LineResult LineHandler::processCommand(
 	}
 	else if (command == "MODE")
 	{
-		if (trailing != NULL)
-		{
-			result = line.getNickname() + " sets mode " + trailing
-				+ " on " + mid->at(0);
-		}
-		else
-		{
-			QString target = mid->at(0);
-			result = line.getNickname() + " sets mode "
-				+ line.getMiddle()->at(1) + " on " + target;
-			/*if (target.at(0) == '#')
-			{
-				channelIndex =
-					server->getChannelList()->getIndex(target);
-			}*/
-		}
+		qDebug() << "MODE ALERT!!";
+		qDebug() << params->size();
+		result = line.getNickname() + " sets mode " + params->last() + " on " + params->first();
 	}
 	else if (command == "PART")
 	{
@@ -79,27 +61,27 @@ LineResult LineHandler::processCommand(
 	else if (command == "QUIT")
 	{
 		result = line.getNickname() + " quit (" 
-			+ line.getTrailing() + ")";
+			+ params->last() + ")";
 	}
 	else if (command == "KICK")
 	{
-		result = line.getNickname() + " kicked " + mid->at(1);
-			+ " from " + channel + " (" + line.getTrailing() + ")";
+		result = line.getNickname() + " kicked " + params->at(1);
+			+ " from " + *channel + " (" + params->last() + ")";
 	}
 	else if (command == "PING")
 	{
 		response = "PONG";
 		qDebug() << line.getFullMessage();
-		if (trailing != NULL)
+		if (params->size() == 1)
 		{
-			response += " " + *trailing;
+			response += " " + params->first();
 		}
 	}
 	else
 	{
-		if (trailing != NULL)
+		if (params->size() > 0)
 		{
-			result = *trailing;
+			result = params->last();
 		}
 		else
 		{
@@ -108,20 +90,36 @@ LineResult LineHandler::processCommand(
 	}
 	LineResult lineResult;
 	lineResult.text = result + "\n";
-	lineResult.channelIndex = channelIndex;
+
+	int index = 0;
+	if (channel != NULL)
+	{
+		index = server->getChannelList()->getIndex(*channel);
+		delete channel;
+	}
+	lineResult.channelIndex = index;
 	lineResult.response = response;
 	return lineResult;
 }
 
-std::tuple<QString, size_t> LineHandler::ifChannel(
-	const QStringList *mid, Server *server)
+const QString *LineHandler::Channel(const QStringList *params)
 {
-	QString channel = "(MISSING CHANNEL XD)";
-	size_t index = 0;
-	if (mid != NULL && !mid->isEmpty() && mid->at(0).at(0) == '#')
+	QString *channel = NULL;
+	if (!params->isEmpty())
 	{
-		channel = mid->at(0);
-		index = server->getChannelList()->getIndex(channel);
+		QStringList p = *params;
+		for (QStringList::iterator it = p.begin(); it != p.end(); ++it)
+		{
+			const QString param = *it;
+			if (param.at(0) == "#")
+			{
+				channel = new QString(param);
+				//qDebug() << "FOUND";
+				break;
+			}
+		}
 	}
-	return std::make_tuple(channel, index);
+	/*QString t = (channel == NULL) ? " NULL " : " NOT NULL ";
+	qDebug() << t;*/
+	return channel;
 }

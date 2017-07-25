@@ -30,7 +30,7 @@ private:
 	LineResult processCommand(Line &line,
 		Server *server,
 		const QString &name);
-	std::tuple<QString, size_t> ifChannel(const QStringList *mid, Server *server);
+	const QString *Channel(const QStringList *params);
 };
 
 #endif

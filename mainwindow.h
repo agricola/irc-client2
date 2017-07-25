@@ -59,6 +59,7 @@ private:
 	void onConnect(const QString &server, const int port,
 		const QString &nickLine, const QString &userLine);
 	void resetServer();
+	void changeChannel(Channel &channel);
 };
 
 #endif // MAINWINDOW_H

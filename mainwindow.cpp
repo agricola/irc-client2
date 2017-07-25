@@ -37,19 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	auto end = std::chrono::high_resolution_clock::now();
 	qDebug() << std::chrono::duration_cast<std::chrono::nanoseconds>(
 		end - begin).count();*/
-
-	UserList *list = new UserList(this);
-	for (int i = 0; i < 26; i++)
-	{
-		QString c = 65 + i;
-		QString full = c + "!" + c  + "@" + c;
-		list->addUser(full);
-	}
-	
-	//list->addUser(line);
-	ui->listView->setModel(list);
-	
-
 }
 
 MainWindow::~MainWindow()
@@ -74,6 +61,7 @@ Channel *MainWindow::getChannel(const int index)
 {
 	ChannelList *list = servers->getServers()[0]->getChannelList();
 	Channel *c = list->getChannels()[index];
+	// TODO: make a at() method for channels
 	return c;
 }
 
@@ -98,7 +86,12 @@ void MainWindow::on_lineEdit_returnPressed()
 {
 	QString text = ui->lineEdit->text();
 	QString result;
-	if (text.length() <= 0) return;
+	if (text.length() <= 0 || socket->state() != QTcpSocket::ConnectedState)
+	{
+		ui->lineEdit->clear();
+		return;
+	}
+		
 	int index = ui->channelCombo->currentIndex();
 	if (text.at(0) == "/")
 	{
@@ -162,9 +155,8 @@ void MainWindow::handleLineResult(LineResult result)
 
 void MainWindow::on_channelCombo_activated(int index)
 {
-	ui->textBrowser->setText(getChannel(index)->getText());
-	QScrollBar *scrollBar = ui->textBrowser->verticalScrollBar();
-	scrollBar->setValue(scrollBar->maximum());
+	// will this ever be null or out of range?
+	changeChannel(*getChannel(index));
 }
 
 void MainWindow::on_serverCombo_activated(int index)
@@ -224,6 +216,14 @@ void MainWindow::resetServer()
 		delete servers;
 		servers = new ServerList(this);
 	}
+}
+
+void MainWindow::changeChannel(Channel &channel)
+{
+	ui->textBrowser->setText(channel.getText());
+	QScrollBar *scrollBar = ui->textBrowser->verticalScrollBar();
+	scrollBar->setValue(scrollBar->maximum());
+	ui->listView->setModel(channel.getUserList());
 }
 
 void MainWindow::displayContextMenu(const QPoint &pos)

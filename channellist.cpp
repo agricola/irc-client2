@@ -52,7 +52,7 @@ const size_t ChannelList::getIndex(const QString &name)
 		channels.begin(), channels.end(), [name](Channel *s) {
 		return s->getName() == name; });
 	size_t index = std::distance(channels.begin(), iter);
-	return index;
+	return index < channels.size() ? index : -1;
 }
 
 std::vector<Channel*> ChannelList::getChannels()

@@ -3,7 +3,7 @@
 
 #include <qstring.h>
 #include <QObject>
-
+#include <userlist.h>
 
 class Channel : public QObject
 {
@@ -15,9 +15,11 @@ public:
 	~Channel();
 	const QString getText();
 	void addText(const QString &text);
+	UserList *getUserList();
 
 private:
 	const QString name;
+	UserList userList;
 	QString text;
 };
 
