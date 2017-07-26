@@ -20,13 +20,15 @@ public:
 	void removeChannel(const QString name);
 	const size_t getIndex(const QString &name);
 	std::vector<Channel*> getChannels();
+	Channel *getChannel(const QString &name);
+	Channel *getChannelAt(const unsigned int index);
 
 signals:
 	void setIndex(int index);
 
 private:
 	std::vector<Channel*> channels;
-	bool containsName(const QString name);
+	bool containsName(const QString &name);
 	
 
 };

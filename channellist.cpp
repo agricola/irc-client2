@@ -60,18 +60,28 @@ std::vector<Channel*> ChannelList::getChannels()
 	return channels;
 }
 
+Channel *ChannelList::getChannel(const QString &name)
+{
+	std::vector<Channel*>::iterator found =
+		std::find_if(channels.begin(), channels.end(),
+			[name](Channel *c) { return c->getName() == name; });
+	return found != channels.end() ? *found : NULL;
+}
+
+Channel *ChannelList::getChannelAt(const unsigned int index)
+{
+	return channels[index];
+}
+
 void ChannelList::removeChannel(const QString name)
 {
 	channels.erase(std::remove_if(channels.begin(), channels.end(),
 		[name](Channel *c) { return c->getName() == name; }));
 }
 
-bool ChannelList::containsName(const QString name)
+bool ChannelList::containsName(const QString &name)
 {
-	std::vector<Channel*>::iterator found =
-		std::find_if(channels.begin(), channels.end(),
-			[name](Channel *c) { return c->getName() == name; });
-	return found != channels.end();
+	return getChannel(name) != NULL;
 }
 /*
 void ChannelList::setIndex(int index)

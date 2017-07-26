@@ -7,6 +7,11 @@ User::User(const QString &full, QObject *parent) :
 	parseFull(full);
 }
 
+
+User::User(QObject *parent) : QObject(parent)
+{
+}
+
 const QString User::getNick()
 {
 	return nick;
@@ -25,6 +30,11 @@ const QString User::getHost()
 const QString User::getFull()
 {
 	return full;
+}
+
+void User::setNick(const QString &nick)
+{
+	this->nick = nick;
 }
 
 void User::parseFull(const QString &full)

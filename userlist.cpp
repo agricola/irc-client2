@@ -1,7 +1,8 @@
 #include "userlist.h"
 
 UserList::UserList(QObject *parent)
-    : QAbstractListModel(parent)
+	: QAbstractListModel(parent),
+	initialized(false)
 {
 }
 
@@ -10,25 +11,27 @@ UserList::UserList(QObject *parent)
     // FIXME: Implement me!
 }*/
 
-void UserList::addUser(const QString &full)
+void UserList::addUser(const QString &nick)
 {
 	// should this match by full or just nick?
-	if (!containsFull(full))
+	if (!containsNick(nick))
 	{
-		User *u = new User(full, this);
+		User *u = new User(this);
+		u->setNick(nick);
 		users.push_back(u);
 		QModelIndex top = index(0);
 		int end = users.size() - 1;
 		QModelIndex bottom = index(end);
 		dataChanged(top, bottom);
+		qDebug() << "user added : " + nick;
 	}
 }
 
-void UserList::removeUser(const QString &full)
+void UserList::removeUser(const QString &nick)
 {
 	users.erase(std::remove_if(users.begin(), users.end(),
-		[full](User *u) {
-		return u->getFull() == full; }));
+		[nick](User *u) {
+		return u->getNick() == nick; }));
 }
 
 int UserList::rowCount(const QModelIndex &parent) const
@@ -56,6 +59,25 @@ QVariant UserList::data(const QModelIndex &index, int role) const
 	{
 		return QVariant();
 	}
+}
+
+void UserList::setIsInitialized(bool initialized)
+{
+	this->initialized = initialized;
+}
+
+void UserList::addUsers(const QString &users)
+{
+	QStringList usersList = users.split(' ');
+	for each (const QString &user in usersList)
+	{
+		addUser(user);
+	}
+}
+
+const bool UserList::isInitialized()
+{
+	return initialized;
 }
 
 bool UserList::containsFull(const QString &full)

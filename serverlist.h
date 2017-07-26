@@ -22,6 +22,7 @@ public:
 	void removeServer(const QString &name, const int port);
 	const size_t getIndex(const QString &name, const int port);
 	QList<Server*> getServers();
+	Server *getServerAt(const unsigned int index);
 
 signals:
 	void setIndex(int index);

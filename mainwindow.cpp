@@ -68,6 +68,9 @@ Channel *MainWindow::getChannel(const int index)
 void MainWindow::setChannelIndex(int index)
 {
 	ui->channelCombo->setCurrentIndex(index);
+	Channel *c = servers->getServers()[0]->getChannelList()
+		->getChannelAt(index);
+	changeChannel(*c);
 }
 
 void MainWindow::readStream()
@@ -224,6 +227,7 @@ void MainWindow::changeChannel(Channel &channel)
 	QScrollBar *scrollBar = ui->textBrowser->verticalScrollBar();
 	scrollBar->setValue(scrollBar->maximum());
 	ui->listView->setModel(channel.getUserList());
+	qDebug() << " channel changed : " + channel.getName();
 }
 
 void MainWindow::displayContextMenu(const QPoint &pos)

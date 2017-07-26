@@ -68,6 +68,23 @@ LineResult LineHandler::processCommand(
 		result = line.getNickname() + " kicked " + params->at(1);
 			+ " from " + *channel + " (" + params->last() + ")";
 	}
+	else if (command == "353")
+	{
+		qDebug() << line.getParams()->size();
+		//qDebug() << (server->getChannelList()->getChannel("#test4") == NULL);
+		UserList *u = server->getChannelList()->getChannel(*channel)
+			->getUserList();
+		if (!u->isInitialized())
+		{
+			u->addUsers(params->last());
+		}
+	}
+	else if (command == "366")
+	{
+		UserList *u = server->getChannelList()->getChannel(*channel)
+			->getUserList();
+		u->setIsInitialized(true);
+	}
 	else if (command == "PING")
 	{
 		response = "PONG";

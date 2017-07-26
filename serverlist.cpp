@@ -71,6 +71,11 @@ QList<Server*> ServerList::getServers()
 	return servers;
 }
 
+Server *ServerList::getServerAt(const unsigned int index)
+{
+	return servers[index];
+}
+
 bool ServerList::contains(const QString &name, const int port)
 {
 	QList<Server*>::iterator found = std::find_if(
