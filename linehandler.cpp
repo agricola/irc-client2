@@ -27,7 +27,7 @@ LineResult LineHandler::processCommand(
 	qDebug() << line.getFullMessage();
 	// get channel and index if theres a channel in line
 	const QStringList *params = line.getParams();
-	const QString *channel = Channel(params);
+	const QString *channel = ChannelName(params);
 
 	const QString command = line.getCommand();
 	//const QString *trailing = line->last();
@@ -40,12 +40,15 @@ LineResult LineHandler::processCommand(
 	{
 		if (line.sentFrom(name))
 		{
-			server->getChannelList()->addChannel(*channel);
+			
 			result = "Joined channel " + *channel;
+			Channel *c = server->getChannelList()->addChannel(*channel);
 		}
 		else
 		{
 			result =  line.getNickname() + " joined the channel";
+			Channel *c = server->getChannelList()->getChannel(*channel);
+			c->getUserList()->addUser(line.getNickname());
 		}
 	}
 	else if (command == "MODE")
@@ -57,16 +60,26 @@ LineResult LineHandler::processCommand(
 	else if (command == "PART")
 	{
 		result = line.getNickname() + " parted " + channel;
+		Channel *c = server->getChannelList()->getChannel(*channel);
+		c->getUserList()->removeUser(line.getNickname());
 	}
 	else if (command == "QUIT")
 	{
 		result = line.getNickname() + " quit (" 
 			+ params->last() + ")";
+		ChannelList *list = server->getChannelList();
+		const QString nick = line.getNickname();
+		list->forEach([nick](Channel *c) {
+			qDebug() << "in";
+			c->getUserList()->removeUser(nick);
+		});
 	}
 	else if (command == "KICK")
 	{
 		result = line.getNickname() + " kicked " + params->at(1);
 			+ " from " + *channel + " (" + params->last() + ")";
+			Channel *c = server->getChannelList()->getChannel(*channel);
+		c->getUserList()->removeUser(params->last());
 	}
 	else if (command == "353")
 	{
@@ -119,7 +132,7 @@ LineResult LineHandler::processCommand(
 	return lineResult;
 }
 
-const QString *LineHandler::Channel(const QStringList *params)
+const QString *LineHandler::ChannelName(const QStringList *params)
 {
 	QString *channel = NULL;
 	if (!params->isEmpty())

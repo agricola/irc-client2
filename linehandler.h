@@ -30,7 +30,7 @@ private:
 	LineResult processCommand(Line &line,
 		Server *server,
 		const QString &name);
-	const QString *Channel(const QStringList *params);
+	const QString *ChannelName(const QStringList *params);
 };
 
 #endif

@@ -32,6 +32,11 @@ void UserList::removeUser(const QString &nick)
 	users.erase(std::remove_if(users.begin(), users.end(),
 		[nick](User *u) {
 		return u->getNick() == nick; }));
+	QModelIndex top = index(0);
+	int end = users.size() - 1;
+	QModelIndex bottom = index(end);
+	dataChanged(top, bottom);
+	qDebug() << "user removed : " + nick;
 }
 
 int UserList::rowCount(const QModelIndex &parent) const

@@ -30,12 +30,12 @@ int ChannelList::rowCount(const QModelIndex & parent) const
 	return channels.size();
 }
 
-void ChannelList::addChannel(const QString name)
+Channel *ChannelList::addChannel(const QString &name)
 {
 	if (containsName(name))
 	{
 		qDebug() << "already contains " + name;
-		return;
+		return NULL;
 	}
 	Channel *c = new Channel(name, this);
 	channels.push_back(c);
@@ -44,6 +44,7 @@ void ChannelList::addChannel(const QString name)
 	QModelIndex bottom = index(end);
 	dataChanged(top, bottom);
 	emit setIndex(end);
+	return c;
 }
 
 const size_t ChannelList::getIndex(const QString &name)
@@ -71,6 +72,22 @@ Channel *ChannelList::getChannel(const QString &name)
 Channel *ChannelList::getChannelAt(const unsigned int index)
 {
 	return channels[index];
+}
+
+void ChannelList::forEach(std::function<void(Channel*)> func)
+{
+	qDebug() << channels.size();
+	if (channels.size() > 1)
+	{
+		for (size_t i = 1; i < channels.size(); i++)
+		{
+			qDebug() << QString("LOOP") + int(i);
+			Channel *c = channels[i];
+			qDebug() << "p";
+			func(c);
+			qDebug() << "end";
+		}
+	}
 }
 
 void ChannelList::removeChannel(const QString name)
