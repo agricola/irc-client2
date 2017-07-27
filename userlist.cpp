@@ -27,16 +27,22 @@ void UserList::addUser(const QString &nick)
 	}
 }
 
-void UserList::removeUser(const QString &nick)
+bool UserList::removeUser(const QString &nick)
 {
+	int oldSize = users.size();
 	users.erase(std::remove_if(users.begin(), users.end(),
 		[nick](User *u) {
-		return u->getNick() == nick; }));
-	QModelIndex top = index(0);
-	int end = users.size() - 1;
-	QModelIndex bottom = index(end);
-	dataChanged(top, bottom);
-	qDebug() << "user removed : " + nick;
+		return u->getNick() == nick; }), users.end());
+	bool removed = oldSize > users.size();
+	if (removed)
+	{
+		QModelIndex top = index(0);
+		int end = users.size() - 1;
+		QModelIndex bottom = index(end);
+		dataChanged(top, bottom);
+		qDebug() << "user removed : " + nick;
+	}
+	return removed;
 }
 
 int UserList::rowCount(const QModelIndex &parent) const

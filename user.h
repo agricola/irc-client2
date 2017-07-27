@@ -27,6 +27,7 @@ private:
 	QString host;
 	const QString full;
 	void parseFull(const QString &nick);
+	QString noPrefixNick(QString nick);
 
 };
 

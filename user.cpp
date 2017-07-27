@@ -34,7 +34,7 @@ const QString User::getFull()
 
 void User::setNick(const QString &nick)
 {
-	this->nick = nick;
+	this->nick = noPrefixNick(nick);
 }
 
 void User::parseFull(const QString &full)
@@ -43,4 +43,9 @@ void User::parseFull(const QString &full)
 	nick = split[0];
 	user = split[1];
 	host = split[2];
+}
+
+QString User::noPrefixNick(QString nick)
+{
+	return nick.remove(QRegExp("[+~&@%]"));
 }

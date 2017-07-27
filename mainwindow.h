@@ -42,6 +42,7 @@ private:
     QTcpSocket *socket;
     QString totalText;
 	ServerList *servers;
+	Server *currentServer;
 	LineHandler lineHandler;
 	QString nickname;
 	ConnectWindow *connectWindow;
@@ -50,7 +51,7 @@ private:
 
 	void addServer(const QString &serverAddress, const int serverPort);
     void addText(const QString &text, const int index);
-	void addText(const QString &text);
+	void addTextToCurrent(const QString &text);
 	void handleLineResult(LineResult result);
     void connectToServer(const QString &server, const int port);
 	void changeServer(Server *server);

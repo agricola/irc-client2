@@ -17,6 +17,9 @@ public:
 	void addText(const QString &text);
 	UserList *getUserList();
 
+signals:
+	void setText(QString &text, const QString &name);
+
 private:
 	const QString name;
 	UserList userList;

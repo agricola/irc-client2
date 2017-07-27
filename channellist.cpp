@@ -38,6 +38,7 @@ Channel *ChannelList::addChannel(const QString &name)
 		return NULL;
 	}
 	Channel *c = new Channel(name, this);
+	connect(c, &Channel::setText, this, &ChannelList::channelTextChanged);
 	channels.push_back(c);
 	QModelIndex top = index(0);
 	int end = channels.size() - 1;
@@ -49,23 +50,21 @@ Channel *ChannelList::addChannel(const QString &name)
 
 const size_t ChannelList::getIndex(const QString &name)
 {
-	std::vector<Channel*>::iterator iter = std::find_if(
+	QList<Channel*>::iterator iter = std::find_if(
 		channels.begin(), channels.end(), [name](Channel *s) {
 		return s->getName() == name; });
 	size_t index = std::distance(channels.begin(), iter);
 	return index < channels.size() ? index : -1;
 }
 
-std::vector<Channel*> ChannelList::getChannels()
+QList<Channel*> ChannelList::getChannels()
 {
 	return channels;
 }
 
 Channel *ChannelList::getChannel(const QString &name)
 {
-	std::vector<Channel*>::iterator found =
-		std::find_if(channels.begin(), channels.end(),
-			[name](Channel *c) { return c->getName() == name; });
+	QList<Channel*>::iterator found = getIter(name);
 	return found != channels.end() ? *found : NULL;
 }
 
@@ -76,29 +75,38 @@ Channel *ChannelList::getChannelAt(const unsigned int index)
 
 void ChannelList::forEach(std::function<void(Channel*)> func)
 {
-	qDebug() << channels.size();
 	if (channels.size() > 1)
 	{
 		for (size_t i = 1; i < channels.size(); i++)
 		{
-			qDebug() << QString("LOOP") + int(i);
 			Channel *c = channels[i];
-			qDebug() << "p";
 			func(c);
-			qDebug() << "end";
 		}
 	}
 }
 
-void ChannelList::removeChannel(const QString name)
+void ChannelList::removeChannel(const QString &name)
 {
-	channels.erase(std::remove_if(channels.begin(), channels.end(),
-		[name](Channel *c) { return c->getName() == name; }));
+	/*channels.erase(std::remove_if(channels.begin(), channels.end(),
+		[name](Channel *c) { return c->getName() == name; }));*/
+	Channel *c = getChannel(name);
+	disconnect(c);
+	channels.erase(getIter(name));
+}
+QList<Channel*>::iterator ChannelList::getIter(const QString & name)
+{
+	return std::find_if(channels.begin(), channels.end(),
+		[name](Channel *c) { return c->getName() == name; });
 }
 
 bool ChannelList::containsName(const QString &name)
 {
 	return getChannel(name) != NULL;
+}
+void ChannelList::channelTextChanged(QString &text, const QString &name)
+{
+	const int index = getIter(name) - channels.begin();
+	emit setChanText(text, index);
 }
 /*
 void ChannelList::setIndex(int index)

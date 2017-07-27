@@ -20,7 +20,8 @@ const QString Channel::getText()
 
 void Channel::addText(const QString &text)
 {
-	this->text += text;
+	this->text += text + "\n";
+	emit setText(this->text, name);
 }
 
 UserList *Channel::getUserList()

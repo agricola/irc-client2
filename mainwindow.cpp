@@ -52,9 +52,13 @@ void MainWindow::connectToServer(const QString &server, const int port)
 
 void MainWindow::changeServer(Server *server)
 {
+	disconnect(currentServer);
+	currentServer = server;
 	ui->channelCombo->setModel(server->getChannelList());
 	connect(server->getChannelList(), &ChannelList::setIndex,
 		this, &MainWindow::setChannelIndex);
+	connect(server->getChannelList(), &ChannelList::setChanText,
+		this, &MainWindow::addText);
 }
 
 Channel *MainWindow::getChannel(const int index)
@@ -103,11 +107,11 @@ void MainWindow::on_lineEdit_returnPressed()
 	else if (index > 0)
 	{
 		result = "PRIVMSG " + getChannel(index)->getName() + " :" + text;
-		addText(nickname + " | " + text + "\r\n");
+		addTextToCurrent(nickname + " | " + text);
 	}
 	else
 	{
-		addText("Nothing sent! Try /HELP\r\n");
+		addTextToCurrent("Nothing sent! Try /HELP");
 	}
     socket->write(result.toUtf8() + "\r\n");
     ui->lineEdit->clear();
@@ -123,7 +127,7 @@ void MainWindow::addServer(const QString &address,
 void MainWindow::addText(const QString &text, const int index)
 {
 	Channel *channel = getChannel(index);
-	channel->addText(text);
+	//channel->addText(text);
 	if (index == ui->channelCombo->currentIndex())
 	{
 		QScrollBar *scrollBar = ui->textBrowser->verticalScrollBar();
@@ -138,9 +142,11 @@ void MainWindow::addText(const QString &text, const int index)
 	}
 }
 
-void MainWindow::addText(const QString &text)
+void MainWindow::addTextToCurrent(const QString &text)
 {
-	addText(text, ui->channelCombo->currentIndex());
+	Channel *c = currentServer->getChannelList()->getChannelAt(
+		ui->channelCombo->currentIndex());
+	c->addText(text);
 }
 
 void MainWindow::handleLineResult(LineResult result)
@@ -151,7 +157,7 @@ void MainWindow::handleLineResult(LineResult result)
 	}
 	else
 	{
-		addText(result.text, result.channelIndex);
+		//addText(result.text, result.channelIndex);
 	}
 	
 }

@@ -13,7 +13,7 @@ public:
     explicit UserList(QObject *parent = nullptr);
 
 	void addUser(const QString &nick);
-	void removeUser(const QString &full);
+	bool removeUser(const QString &full);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	const bool isInitialized();
